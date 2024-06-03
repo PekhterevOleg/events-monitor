@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        :root {
+            --circle-active: #83d062;
+            --circle-inactive: #e2e0df;
+            --circle-error: #a80f0f;
+            --color-error: #a80f0f;
+            --circle-error-lighter: #f32121;
+            --color-error-lighter: #f32121;
+            --color-inactive: #e2e0df;
+            --color-active: black;
+        }
+
+        html, body {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+
+            width: 100vw;
+            height: 100vh;
+
+            margin-top: 5%;
+        }
+
+        .container {
+            display: grid;
+            width: 1000px;
+            height: 200px;
+
+            grid-template-columns: 50px repeat(4, 1fr);
+            grid-auto-rows: 50px;
+            gap: 2px;
+
+            font-family: monospace;
+            font-size: 1.2rem;
+        }
+
+        .item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #b7b8c4  ;
+            border: 1px solid black;
+            border-radius: 10px;
+            transition: color ease-in 500ms;
+            /*font-weight: bold;*/
+        }
+
+        .circle, .circle-active, .circle-inactive, .circle-error {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+        .circle-active > div {
+            height: 85%;
+            width: 85%;
+            border-radius: 50%;
+            background-color: var(--circle-active);
+            transition: background-color ease-in 500ms;
+        }
+
+        .circle-inactive > div {
+            height: 85%;
+            width: 85%;
+            border-radius: 50%;
+            background-color: var(--circle-inactive);
+            transition: background-color ease-in 500ms;
+        }
+
+        .circle-error > div {
+            height: 85%;
+            width: 85%;
+            border-radius: 50%;
+            background-color: var(--circle-error);
+            transition: background-color ease-in 500ms;
+        }
+
+        .table {
+            border: 1px solid black;
+            border-radius: 10px;
+            font-size: 1.3rem;
+            margin-bottom: 7px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .color-inactive {
+            /*color: var(--color-grey);*/
+            color: var(--color-inactive);
+        }
+
+        .color-active {
+            color: var(--color-active);
+            font-weight: bold;
+        }
+
+        .color-error {
+            color: var(--color-error);
+            font-weight: bold;
+        }
+
+        .color-error-lighter {
+            color: var(--color-error-lighter);
+            font-weight: bold;
+        }
+
+        .circle-error-lighter > div {
+            background-color: var(--circle-error-lighter);
+        }
+
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="table">Инд.</div>
+        <div class="table">Сервер</div>
+        <div class="table">heartbeat получен</div>
+        <div class="table">Статус</div>
+        <div class="table">Время Offline</div>
+    </div>
+
+    <script>
+        const ws = new WebSocket(`wss://${location.host}`);
+        const expiredObject = {};
+
+        /**
+         * @typedef {Object} Server
+         * @property {string} cn
+         * @property {string} name
+         * @property {string} objectGUID
+         * @property {string} operatingSystem
+         * @property {Date|null} timestamp
+         * @property {boolean|null} heartbeat
+         * @property {string} _id
+         */
+
+        ws.addEventListener('message', (e) => {
+            /**
+             * @type {Server[]}
+             */
+            const serverObjs = JSON.parse(e.data);
+
+            serverObjs.forEach(server => {
+                console.log(`send data: ${server.name}`);
+                if (server.heartbeat === null) {
+                    const divElms = addElements(server);
+                    addClassElements(divElms, server.heartbeat, server.name);
+                }
+                else {
+                    let allDivs = searchAllDivs(server.name);
+                    if (!allDivs.length) {
+                        const divElms = addElements(server);
+                        addClassElements(divElms, server.heartbeat, server.name);
+                        allDivs = searchAllDivs(server.name);
+                    }
+                    updateTextEl(allDivs, server);
+                    addClassElements(allDivs, server.heartbeat, server.name);
+                    if (!server.heartbeat) {
+                        if (!expiredObject[server._id]) {
+                            flickerDivs(allDivs, server);
+                        }
+                    } else  {
+                        if (expiredObject[server._id]) {
+                            clearInterval(expiredObject[server._id]);
+                            delete expiredObject[server._id];
+                        }
+                    }
+                }
+            })
+        })
+
+        /**
+         * @param {Server} server
+         * @returns {HTMLDivElement[]}
+         */
+        function addElements(server) {
+
+            const elements = [];
+
+            const heartbeatTimestamp = server.timestamp? shortTimestamp(server.timestamp): 'Inactive';
+
+            const elementsText = {
+                0: server.name,
+                1: heartbeatTimestamp,
+                2: server.heartbeat? 'Online': 'Offline',
+                3: 'Missing'
+            }
+
+            const container = document.querySelector('.container');
+            const divCircle = document.createElement('div');
+            const subDivCircle = document.createElement('div');
+            divCircle.classList.add('circle');
+            divCircle.append(subDivCircle)
+            container.append(divCircle);
+            elements.push(divCircle);
+
+            for (let i = 0; i < 4; i++) {
+                let div = document.createElement('div');
+                div.textContent = elementsText[i];
+                container.append(div);
+                elements.push(div);
+            }
+            return elements;
+        }
+
+        /**
+         *
+         * @param {HTMLDivElement[]} elms
+         * @param {boolean|null} heartbeat
+         * @param {string} serverName
+         * @returns {void}
+         */
+        function addClassElements(elms, heartbeat, serverName) {
+            // const typeStyle = heartbeat === null? 'inactive': heartbeat === true? 'active': 'error';
+
+            const attr = {
+                name: 'server-name',
+                value: serverName
+            }
+
+            const circleActive = `circle circle-active`;
+            const circleInActive = `circle circle-inactive`;
+            const circleError = `circle circle-error`;
+
+            const divActive = `item color-active`;
+            const divInActive = `item color-inactive`;
+            const divError = `item color-error`;
+
+            elms.forEach(divEl => {
+                divEl.setAttribute(attr.name, attr.value);
+
+                if (heartbeat === null && isCircle(divEl)) {
+                    removeClassOnElement(divEl);
+                    applyClassOnElement(divEl, circleInActive);
+                }
+
+                else if (heartbeat === null) {
+                    removeClassOnElement(divEl);
+                    const classes = divInActive.split(' ');
+                    divEl.classList.add(...classes);
+                }
+
+                else if (heartbeat === true && isCircle(divEl)) {
+                    removeClassOnElement(divEl);
+                    applyClassOnElement(divEl, circleActive);
+                }
+
+                else if (heartbeat === true) {
+                    removeClassOnElement(divEl);
+                    applyClassOnElement(divEl, divActive);
+                }
+
+                else if (heartbeat === false && isCircle(divEl)) {
+                    removeClassOnElement(divEl);
+                    applyClassOnElement(divEl, circleError);
+                }
+
+                else if (heartbeat === false) {
+                    removeClassOnElement(divEl);
+                    applyClassOnElement(divEl, divError);
+                }
+            })
+        }
+
+        /**
+         * @param {HTMLDivElement} el
+         * @param {string} strClass
+         * @returns {void}
+         */
+        function applyClassOnElement(el, strClass) {
+            const classes = strClass.split(' ');
+            el.classList.add(...classes);
+        }
+
+        /**
+         *
+         * @param {HTMLDivElement} el
+         * @returns {Boolean}
+         */
+        function isCircle(el) {
+            return el.classList.contains('circle');
+        }
+
+        /**
+         * @param {HTMLDivElement} el
+         * @returns {void}
+         */
+        function removeClassOnElement(el) {
+            Array.from(el.classList).forEach(cls => {el.classList.remove(cls)});
+        }
+
+        /**
+         * @param {string} serverName
+         * @returns {HTMLDivElement[]}
+         */
+        function searchAllDivs(serverName) {
+            const query = `[server-name=${serverName}]`
+            return Array.from(document.querySelectorAll(query)).map(
+                element =>
+                /** @type {HTMLDivElement} */
+                (element)
+            );
+        }
+
+        /**
+         *
+         * @param {HTMLDivElement[]} divs
+         * @param srvObj
+         */
+        function flickerDivs(divs, srvObj) {
+            expiredObject[srvObj._id] = setInterval(() => {
+                divs.forEach(div => {
+                    div.classList.contains('circle')?
+                        div.classList.toggle('circle-error-lighter'):
+                        div.classList.toggle('color-error-lighter')
+                })
+            }, 1000);
+        }
+
+        /**
+         *
+         * @param {HTMLDivElement} circleEl
+         * @param {Server} srvObj
+         * @returns {void}
+         */
+        function flickerCircle(circleEl, srvObj) {
+                expiredObject[srvObj._id] = setInterval(() => {
+                    circleEl.classList.toggle('circle-error-lighter');
+                }, 1000);
+        }
+
+        /**
+         *
+         * @param {HTMLDivElement[]} elms
+         */
+        function flickerDivsFalse(elms) {
+            elms.forEach(div => {
+                div.classList.toggle('color-error-lighter');
+            })
+        }
+
+        /**
+         *
+         * @param {Date} timestamp
+         * @returns {string}
+         */
+        function shortTimestamp(timestamp) {
+            const dateStr = timestamp.toLocaleString();
+            return dateStr.replace('T', ' ').slice(0,19);
+        }
+
+        /**
+         *
+         * @param {HTMLDivElement[]} elms
+         * @param {Server} server
+         */
+        function updateTextEl(elms, server) {
+
+            const timestamp = shortTimestamp(server.timestamp);
+
+            const elementsText = {
+                1: server.name,
+                2: timestamp,
+                3: server.heartbeat? 'Online': 'Offline',
+                4: 'Missing'
+            }
+
+            elms.forEach((div, i) => {
+                if (div.classList.contains('item')) {
+                    div.textContent = elementsText[i];
+                }
+            })
+        }
+
+    </script>
+
+</body>
+</html>
