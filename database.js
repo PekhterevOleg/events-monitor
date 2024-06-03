@@ -49,7 +49,7 @@ function isEmptyDB(db, query={}) {
 
 /**
  *
- * @param {string} nameDB
+ * @param {string} [nameDB='LdapObjDB.db']
  * @returns {Datastore}
  */
 function createOrReturnDBLdapObj(nameDB='LdapObjDB.db') {

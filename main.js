@@ -103,11 +103,9 @@ async function main() {
             send: {$exists: false}
         };
         const findObjExp = await moduleDB.getObjFromDB(db, query);
-        console.log(`Enter setInterval, findObjExp.length: ${findObjExp.length}`);
         if (findObjExp.length) {
             const srvNames = findObjExp.map(obj => obj.name);
             await moduleDB.updateObjToDB(db, query, {$set: {heartbeat: false}});
-            // let o = await getObjFromDB(db, {name: {$in: srvNames}});
             broadcastData(await getObjFromDB(db,
                 {name: {$in: srvNames}}
             ));

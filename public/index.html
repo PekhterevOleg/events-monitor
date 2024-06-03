@@ -219,7 +219,7 @@
          *
          * @param {HTMLDivElement[]} elms
          * @param {boolean|null} heartbeat
-         * @param {string} serverName
+         * @param {{get: function(): string, configurable: boolean}} serverName
          * @returns {void}
          */
         function addClassElements(elms, heartbeat, serverName) {
@@ -306,12 +306,14 @@
          * @returns {HTMLDivElement[]}
          */
         function searchAllDivs(serverName) {
-            const query = `[server-name=${serverName}]`
-            return Array.from(document.querySelectorAll(query)).map(
-                element =>
-                /** @type {HTMLDivElement} */
-                (element)
-            );
+            const query = `[server-name="${serverName}"]`
+            return Array
+                    .from(document.querySelectorAll(query))
+                    .map(
+                            element =>
+                            /** @type {HTMLDivElement} */
+                            (element)
+                    );
         }
 
         /**
@@ -322,33 +324,11 @@
         function flickerDivs(divs, srvObj) {
             expiredObject[srvObj._id] = setInterval(() => {
                 divs.forEach(div => {
-                    div.classList.contains('circle')?
-                        div.classList.toggle('circle-error-lighter'):
-                        div.classList.toggle('color-error-lighter')
+                    div.classList.contains('circle')
+                        ? div.classList.toggle('circle-error-lighter')
+                        : div.classList.toggle('color-error-lighter')
                 })
             }, 1000);
-        }
-
-        /**
-         *
-         * @param {HTMLDivElement} circleEl
-         * @param {Server} srvObj
-         * @returns {void}
-         */
-        function flickerCircle(circleEl, srvObj) {
-                expiredObject[srvObj._id] = setInterval(() => {
-                    circleEl.classList.toggle('circle-error-lighter');
-                }, 1000);
-        }
-
-        /**
-         *
-         * @param {HTMLDivElement[]} elms
-         */
-        function flickerDivsFalse(elms) {
-            elms.forEach(div => {
-                div.classList.toggle('color-error-lighter');
-            })
         }
 
         /**
