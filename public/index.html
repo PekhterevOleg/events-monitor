@@ -167,11 +167,11 @@
                         if (!expiredObject[server._id]) {
                             flickerDivs(allDivs, server);
                         }
-                    } else  {
-                        if (expiredObject[server._id]) {
-                            clearInterval(expiredObject[server._id]);
-                            delete expiredObject[server._id];
-                        }
+                    }
+                    else {
+                        expiredObject[server._id]
+                            ? clearInterval(expiredObject[server._id])
+                            : delete expiredObject[server._id];
                     }
             })
         })
@@ -184,7 +184,10 @@
 
             const elements = [];
 
-            const heartbeatTimestamp = server.timestamp? shortTimestamp(server.timestamp): 'Inactive';
+            const heartbeatTimestamp =
+                server.timestamp
+                    ? shortTimestamp(server.timestamp)
+                    : 'Inactive';
 
             const elementsText = {
                 0: server.name,
