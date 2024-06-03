@@ -93,10 +93,10 @@ async function main() {
     }
 
     setInterval(async () => {
-        const date = new Date();
         const expMin = 2 * 60 * 1000;
 
-        const expDate = new Date((date.getTime() - date.getTimezoneOffset() * 60000)-expMin);
+        import {getShiftedDate} from "./utils.js";
+        const expDate = getShiftedDate(expMin);
 
         let query = {
             timestamp: {$ne: null, $lte: expDate},
