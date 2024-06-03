@@ -153,19 +153,10 @@
             const serverObjs = JSON.parse(e.data);
 
             serverObjs.forEach(server => {
-                if (server.heartbeat === null) {
-                    const divElms = addElements(server);
-                    addClassElements(divElms, server.heartbeat, server.name);
-                }
-                else {
-                    let allDivs = searchAllDivs(server.name);
-                    if (!allDivs.length) {
-                        const divElms = addElements(server);
-                        addClassElements(divElms, server.heartbeat, server.name);
-                        allDivs = searchAllDivs(server.name);
-                    }
-                    updateTextEl(allDivs, server);
+                    const allDivs = searchAllDivs(server.name) || addElements(server);
                     addClassElements(allDivs, server.heartbeat, server.name);
+                    updateTextEl(allDivs, server);
+                    
                     if (!server.heartbeat) {
                         if (!expiredObject[server._id]) {
                             flickerDivs(allDivs, server);
@@ -176,7 +167,6 @@
                             delete expiredObject[server._id];
                         }
                     }
-                }
             })
         })
 
@@ -302,18 +292,19 @@
 
         /**
          * @param {string} serverName
-         * @returns {HTMLDivElement[]}
+         * @returns {HTMLDivElement[]|null}
          */
         function searchAllDivs(serverName) {
             const query = `[server-name="${serverName}"]`;
             const elms = document.querySelectorAll(query);
-            return Array
-                    .from(elms)
-                    .map(
-                          element =>
-                         /** @type {HTMLDivElement} */
+            return elms.length
+                      ? Array
+                         .from(elms)
+                         .map(element =>
+                           /** @type {HTMLDivElement} */
                              (element)
-                    )
+                         )
+                      : null
         }
 
         /**
