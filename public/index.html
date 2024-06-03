@@ -153,7 +153,6 @@
             const serverObjs = JSON.parse(e.data);
 
             serverObjs.forEach(server => {
-                console.log(`send data: ${server.name}`);
                 if (server.heartbeat === null) {
                     const divElms = addElements(server);
                     addClassElements(divElms, server.heartbeat, server.name);
@@ -303,17 +302,20 @@
 
         /**
          * @param {string} serverName
-         * @returns {HTMLDivElement[]}
+         * @returns {HTMLDivElement[]|null}
          */
         function searchAllDivs(serverName) {
-            const query = `[server-name="${serverName}"]`
-            return Array
-                    .from(document.querySelectorAll(query))
+            const query = `[server-name="${serverName}"]`;
+            const elms = document.querySelectorAll(query);
+            return elms.length
+                ? Array
+                    .from(elms)
                     .map(
-                            element =>
-                            /** @type {HTMLDivElement} */
-                            (element)
-                    );
+                        element =>
+                        /** @type {HTMLDivElement} */
+                           (element)
+                    )
+                : null;
         }
 
         /**
