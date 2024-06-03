@@ -156,7 +156,7 @@
                     const allDivs = searchAllDivs(server.name) || addElements(server);
                     addClassElements(allDivs, server.heartbeat, server.name);
                     updateTextEl(allDivs, server);
-                    
+
                     if (!server.heartbeat) {
                         if (!expiredObject[server._id]) {
                             flickerDivs(allDivs, server);
