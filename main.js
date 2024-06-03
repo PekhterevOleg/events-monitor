@@ -1,22 +1,19 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import http from 'http';
+import https from 'https';
 import { fileURLToPath } from 'url';
 import { WebSocketServer, WebSocket } from 'ws';
-import https from 'https';
+
 import fs from 'fs';
+import path from 'path';
 
 import cors from 'cors';
-
-
-import path from 'path';
-import {format} from "date-fns";
 
 import {getLDAPObj} from "./fldap.js";
 import * as moduleDB from "./database.js";
 import {ldapConfig} from "./config.js";
 import {getObjFromDB} from "./database.js";
-// import {getObjFromDB, updateAndReturnObjToDB} from "./database.js";
+import {getCurrentFileAndDir, getSSLOptions} from "./utils.js";
 
 const app = express();
 const PORT = 3000;
@@ -28,6 +25,7 @@ app.use(cors());
 async function main() {
 
     const db = moduleDB.createOrReturnDBLdapObj();
+    const __dirname = getCurrentFileAndDir().__dirname;
 
     if (await moduleDB.isEmptyDB(db)) {
         const ldapObj = await getLDAPObj(ldapConfig);
@@ -39,23 +37,21 @@ async function main() {
         }
     }
 
-    let i = 0;
     app.post('/data', async (req, res) => {
         const { serverName, timestamp } = req.body;
+        const query = {};
+              query.cn = serverName;
 
-        // console.log(`[${++i}] - {serverName:${serverName}, timestamp:${timestamp}}`);
-
-        const query = {cn: serverName};
         const update = {
             $set: {
                 timestamp: new Date(timestamp),
                 heartbeat: true
             },
-            $unset: {send: true}
+            $unset: {send: true} //удаляем поле из объекта neDB если имеется
         };
+
         await moduleDB.updateObjToDB(db, query, update);
         const objFromDb = await moduleDB.getObjFromDB(db, query);
-        // console.log(objFromDb);
         broadcastData(objFromDb);
         res.sendStatus(200);
     });
@@ -63,19 +59,10 @@ async function main() {
     app.get('/status', (req, res) => {
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
         console.log(`Client IP: ${clientIp}`);
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
         res.sendFile(path.join(__dirname, 'public', 'index.html'));
     });
 
-
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const options = {
-        key: fs.readFileSync(path.join(__dirname, 'certs', 'svcmon.key')),
-        cert: fs.readFileSync(path.join(__dirname, 'certs', 'svcmon.crt'))
-    };
-
+    const options = getSSLOptions(__dirname);
     const server = https.createServer(options, app);
     const wss = new WebSocketServer({ server });
 
@@ -106,9 +93,7 @@ async function main() {
         if (findObjExp.length) {
             const srvNames = findObjExp.map(obj => obj.name);
             await moduleDB.updateObjToDB(db, query, {$set: {heartbeat: false}});
-            broadcastData(await getObjFromDB(db,
-                {name: {$in: srvNames}}
-            ));
+            broadcastData(await getObjFromDB(db,{name: {$in: srvNames}} ));
             await moduleDB.updateObjToDB(db, {name: {$in: srvNames}}, {$set: {send: true}})
         }
     }, 2 * 60 * 1000)
