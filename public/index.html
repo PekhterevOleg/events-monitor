@@ -163,7 +163,7 @@
                     addClassElements(allDivs, server.heartbeat, server.name);
                     updateTextEl(allDivs, server);
 
-                    if (!server.heartbeat) {
+                    if (server.heartbeat === HBStatus.INACTIVE) {
                         if (!expiredObject[server._id]) {
                             flickerDivs(allDivs, server);
                         }
