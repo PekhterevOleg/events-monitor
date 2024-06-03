@@ -135,6 +135,12 @@
         const ws = new WebSocket(`wss://${location.host}`);
         const expiredObject = {};
 
+        const HBStatus = {
+            UNDEFINED: 'undefined',
+            ACTIVE: 'active',
+            INACTIVE: 'inactive'
+        };
+
         /**
          * @typedef {Object} Server
          * @property {string} cn
@@ -217,7 +223,7 @@
             const attr = {
                 name: 'server-name',
                 value: serverName
-            }
+            };
 
             const circleActive = `circle circle-active`;
             const circleInActive = `circle circle-inactive`;
@@ -230,33 +236,33 @@
             elms.forEach(divEl => {
                 divEl.setAttribute(attr.name, attr.value);
 
-                if (heartbeat === null && isCircle(divEl)) {
+                if (heartbeat === HBStatus.UNDEFINED && isCircle(divEl)) {
                     removeClassOnElement(divEl);
                     applyClassOnElement(divEl, circleInActive);
                 }
 
-                else if (heartbeat === null) {
+                else if (heartbeat === HBStatus.UNDEFINED) {
                     removeClassOnElement(divEl);
                     const classes = divInActive.split(' ');
                     divEl.classList.add(...classes);
                 }
 
-                else if (heartbeat === true && isCircle(divEl)) {
+                else if (heartbeat === HBStatus.ACTIVE && isCircle(divEl)) {
                     removeClassOnElement(divEl);
                     applyClassOnElement(divEl, circleActive);
                 }
 
-                else if (heartbeat === true) {
+                else if (heartbeat === HBStatus.ACTIVE) {
                     removeClassOnElement(divEl);
                     applyClassOnElement(divEl, divActive);
                 }
 
-                else if (heartbeat === false && isCircle(divEl)) {
+                else if (heartbeat === HBStatus.INACTIVE && isCircle(divEl)) {
                     removeClassOnElement(divEl);
                     applyClassOnElement(divEl, circleError);
                 }
 
-                else if (heartbeat === false) {
+                else if (heartbeat === HBStatus.INACTIVE) {
                     removeClassOnElement(divEl);
                     applyClassOnElement(divEl, divError);
                 }

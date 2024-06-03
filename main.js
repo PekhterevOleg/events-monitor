@@ -11,7 +11,7 @@ import cors from 'cors';
 
 import {getLDAPObj} from "./fldap.js";
 import * as moduleDB from "./database.js";
-import {ldapConfig} from "./config.js";
+import {ldapConfig, HBStatus} from "./config.js";
 import {getObjFromDB} from "./database.js";
 import {getCurrentFileAndDir, getSSLOptions} from "./utils.js";
 
@@ -45,7 +45,7 @@ async function main() {
         const update = {
             $set: {
                 timestamp: new Date(timestamp),
-                heartbeat: true
+                heartbeat: HBStatus.ACTIVE
             },
             $unset: {send: true} //удаляем поле из объекта neDB если имеется
         };
@@ -91,7 +91,7 @@ async function main() {
         const findObjExp = await moduleDB.getObjFromDB(db, query);
         if (findObjExp.length) {
             const srvNames = findObjExp.map(obj => obj.name);
-            await moduleDB.updateObjToDB(db, query, {$set: {heartbeat: false}});
+            await moduleDB.updateObjToDB(db, query, {$set: {heartbeat: HBStatus.INACTIVE}});
             broadcastData(await getObjFromDB(db,{name: {$in: srvNames}} ));
             await moduleDB.updateObjToDB(db, {name: {$in: srvNames}}, {$set: {send: true}})
         }

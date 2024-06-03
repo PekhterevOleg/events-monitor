@@ -1,5 +1,5 @@
 import ldap, { Client } from 'ldapjs';
-import {ldapConfig} from "./config.js";
+import {ldapConfig, HBStatus} from "./config.js";
 
 
 /**
@@ -58,7 +58,7 @@ async function searchObj(client, settings) {
                     obj = {...obj, ...{[attrName]: value}};
                 })
                 obj.timestamp = null;
-                obj.heartbeat = null;
+                obj.heartbeat = HBStatus.UNDEFINED;
                 searchObj.push(obj);
             })
 
