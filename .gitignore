@@ -4,3 +4,4 @@ LdapObjDB.db
 node_modules
 certs
 .idea
+config.js
