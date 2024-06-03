@@ -302,20 +302,18 @@
 
         /**
          * @param {string} serverName
-         * @returns {HTMLDivElement[]|null}
+         * @returns {HTMLDivElement[]}
          */
         function searchAllDivs(serverName) {
             const query = `[server-name="${serverName}"]`;
             const elms = document.querySelectorAll(query);
-            return elms.length
-                ? Array
+            return Array
                     .from(elms)
                     .map(
-                        element =>
-                        /** @type {HTMLDivElement} */
-                           (element)
+                          element =>
+                         /** @type {HTMLDivElement} */
+                             (element)
                     )
-                : null;
         }
 
         /**
