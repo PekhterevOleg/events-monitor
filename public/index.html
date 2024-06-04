@@ -198,16 +198,27 @@
                     addClassElements(allDivs, server.heartbeat, server.name);
                     updateTextEl(allDivs, server);
 
-                    if (server.heartbeat === HBStatus.INACTIVE) {
-                        if (!expiredObject[server._id]) {
-                            flickerDivs(allDivs, server);
-                        }
-                    }
-                    else {
-                        expiredObject[server._id]
-                            ? clearInterval(expiredObject[server._id])
-                            : delete expiredObject[server._id];
-                    }
+                    server.heartbeat === HBStatus.INACTIVE
+                                    &&
+                    !expiredObject[server._id]
+                        ? flickerDivs(allDivs, server)
+                   : expiredObject[server._id]
+                        ? clearInterval(expiredObject[server._id])
+                        : delete expiredObject[server._id];
+
+
+
+
+                    // if (server.heartbeat === HBStatus.INACTIVE) {
+                    //     if (!expiredObject[server._id]) {
+                    //         flickerDivs(allDivs, server);
+                    //     }
+                    // }
+                    // else {
+                    //     expiredObject[server._id]
+                    //         ? clearInterval(expiredObject[server._id])
+                    //         : delete expiredObject[server._id];
+                    // }
             })
         })
 
