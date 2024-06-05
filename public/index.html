@@ -160,9 +160,19 @@
     </div>
 
     <script>
+        /**
+         * @type {HTMLDivElement[]}
+         */
         let gridSubContainers = Array.from(
             document.querySelectorAll('.grid-sub-container')
         );
+
+        /**
+         *
+         * @type {Generator<HTMLDivElement, void, *>}
+         */
+        const containerGen = nextContainerGen();
+
     </script>
 
 
@@ -194,31 +204,21 @@
             const serverObjs = JSON.parse(e.data);
 
             serverObjs.forEach(server => {
-                    const allDivs = searchAllDivs(server.name) || addElements(server);
-                    addClassElements(allDivs, server.heartbeat, server.name);
-                    updateTextEl(allDivs, server);
+                const allDivs = searchAllDivs(server.name) || addElements(server);
+                if (!allDivs) {
+                    console.log(`Для данного ${server.name} нет доступного контейнера для создания уведомления`);
+                    return;
+                }
+                addClassElements(allDivs, server.heartbeat, server.name);
+                updateTextEl(allDivs, server);
 
-                    server.heartbeat === HBStatus.INACTIVE
-                                    &&
-                    !expiredObject[server._id]
-                        ? flickerDivs(allDivs, server)
-                   : expiredObject[server._id]
-                        ? clearInterval(expiredObject[server._id])
-                        : delete expiredObject[server._id];
+                if (server.heartbeat === HBStatus.INACTIVE && !expiredObject[server._id]) {
+                    flickerDivs(allDivs, server);
+                } else if (expiredObject[server._id]) {
+                    clearInterval(expiredObject[server._id]);
+                    delete expiredObject[server._id];
+                }
 
-
-
-
-                    // if (server.heartbeat === HBStatus.INACTIVE) {
-                    //     if (!expiredObject[server._id]) {
-                    //         flickerDivs(allDivs, server);
-                    //     }
-                    // }
-                    // else {
-                    //     expiredObject[server._id]
-                    //         ? clearInterval(expiredObject[server._id])
-                    //         : delete expiredObject[server._id];
-                    // }
             })
         })
 
@@ -229,6 +229,7 @@
         function addElements(server) {
 
             const elements = [];
+            // let container = null;
 
             const heartbeatTimestamp =
                 server.timestamp
@@ -242,21 +243,30 @@
                 3: 'Missing'
             }
 
-            const container = document.querySelector('.container');
-            const divCircle = document.createElement('div');
-            const subDivCircle = document.createElement('div');
-            divCircle.classList.add('circle');
-            divCircle.append(subDivCircle)
-            container.append(divCircle);
-            elements.push(divCircle);
+            for (let container of containerGen ) {
+                const divCircle = document.createElement('div');
+                const subDivCircle = document.createElement('div');
+                divCircle.classList.add('circle');
+                divCircle.append(subDivCircle);
+                container.append(divCircle);
+                elements.push(divCircle);
 
-            for (let i = 0; i < 4; i++) {
-                let div = document.createElement('div');
-                div.textContent = elementsText[i];
-                container.append(div);
-                elements.push(div);
+                for (let i = 0; i < 4; i++) {
+                    let div = document.createElement('div');
+                    div.textContent = elementsText[i];
+                    container.append(div);
+                    elements.push(div);
+                }
             }
-            return elements;
+            return elements.length? elements: null;
+        }
+
+        function* nextContainerGen() {
+            for (let container of gridSubContainers) {
+                while (container.children.length <= 35) {
+                    yield container;
+                }
+            }
         }
 
         /**
