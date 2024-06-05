@@ -50,10 +50,11 @@
 
         .grid-sub-container {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(8, auto);
-            border: 1px red solid;
-            gap: 2px;
+            grid-template-columns: 50px repeat(4, 1fr);
+            grid-template-rows: repeat(8, 30px);
+            border: 2px dodgerblue solid;
+            border-radius: 10px;
+            gap: 3px;
             padding: 5px;
         }
 
@@ -104,7 +105,7 @@
 
         .circle-inactive > div {
             height: 85%;
-            width: 85%;
+            width: 55%;
             border-radius: 50%;
             background-color: var(--circle-inactive);
             transition: background-color ease-in 500ms;
@@ -169,6 +170,34 @@
                 <div class="table">Время Offline</div>
 
 <!--                <div class="grid-sub-item">Какой-то текс</div>-->
+            </div>
+            <div class="grid-sub-container">
+                <div class="table">Инд.</div>
+                <div class="table">Сервер</div>
+                <div class="table">heartbeat получен</div>
+                <div class="table">Статус</div>
+                <div class="table">Время Offline</div>
+            </div>
+            <div class="grid-sub-container">
+                <div class="table">Инд.</div>
+                <div class="table">Сервер</div>
+                <div class="table">heartbeat получен</div>
+                <div class="table">Статус</div>
+                <div class="table">Время Offline</div>
+            </div>
+            <div class="grid-sub-container">
+                <div class="table">Инд.</div>
+                <div class="table">Сервер</div>
+                <div class="table">heartbeat получен</div>
+                <div class="table">Статус</div>
+                <div class="table">Время Offline</div>
+            </div>
+            <div class="grid-sub-container">
+                <div class="table">Инд.</div>
+                <div class="table">Сервер</div>
+                <div class="table">heartbeat получен</div>
+                <div class="table">Статус</div>
+                <div class="table">Время Offline</div>
             </div>
             <div class="grid-sub-container">
                 <div class="table">Инд.</div>
@@ -269,9 +298,9 @@
          * @returns {HTMLDivElement[]}
          */
         function addElements(server) {
+            console.log(`addElements serrverName: ${server.name}`);
 
             const elements = [];
-            // let container = null;
 
             const heartbeatTimestamp = server.timestamp? shortTimestamp(server.timestamp): 'Inactive';
             let hbStatus = 'Online'
@@ -286,7 +315,10 @@
                 3: 'Missing'
             }
 
-            for (let container of containerGen ) {
+            const gen = containerGen.next();
+
+            if (!gen.done) {
+                const container = gen.value;
                 const divCircle = document.createElement('div');
                 const subDivCircle = document.createElement('div');
                 divCircle.classList.add('circle');
@@ -300,18 +332,9 @@
                     container.append(div);
                     elements.push(div);
                 }
-                break
             }
             return elements.length? elements: null;
         }
-
-        // function* nextContainerGen() {
-        //     for (let container of gridSubContainers) {
-        //         while (container.children.length <= 35) {
-        //             yield container;
-        //         }
-        //     }
-        // }
 
         /**
          *
@@ -338,11 +361,12 @@
 
             elms.forEach(divEl => {
                 divEl.setAttribute(attr.name, attr.value);
-                removeClassOnElement(divEl);
+                // removeClassOnElement(divEl);
 
                 switch (heartbeat) {
                     case HBStatus.UNDEFINED:
                         if (isCircle(divEl)) {
+                            removeClassOnElement(divEl);
                             applyClassOnElement(divEl, circleInActive);
                         } else {
                             const classes = divInActive.split(' ');
@@ -351,6 +375,7 @@
                         break;
                     case HBStatus.ACTIVE:
                         if (isCircle(divEl)) {
+                            removeClassOnElement(divEl);
                             applyClassOnElement(divEl, circleActive);
                         } else {
                             applyClassOnElement(divEl, divActive);
@@ -358,6 +383,7 @@
                         break;
                     case HBStatus.INACTIVE:
                         if (isCircle(divEl)) {
+                            removeClassOnElement(divEl);
                             applyClassOnElement(divEl,circleError);
                         } else {
                             applyClassOnElement(divEl, divError);
@@ -484,6 +510,7 @@
          * @returns {string}
          */
         function shortTimestamp(timestamp) {
+            console.log(`func shortTimestamp value: ${timestamp}`)
             const dateStr = timestamp.toLocaleString();
             return dateStr.replace('T', ' ').slice(0,19);
         }
@@ -495,12 +522,16 @@
          */
         function updateTextEl(elms, server) {
 
-            const timestamp = shortTimestamp(server.timestamp);
+            const timestamp = server.timestamp? shortTimestamp(server.timestamp): 'Inactive';
+            let hbStatus = 'Online'
+            if (server.heartbeat !== HBStatus.ACTIVE) {
+                hbStatus = 'Offline'
+            }
 
             const elementsText = {
                 1: server.name,
                 2: timestamp,
-                3: server.heartbeat? 'Online': 'Offline',
+                3: hbStatus,
                 4: 'Missing'
             }
 
