@@ -13,7 +13,7 @@ import {getLDAPObj} from "./fldap.js";
 import * as moduleDB from "./database.js";
 import {ldapConfig, HBStatus} from "./config.js";
 import {getObjFromDB} from "./database.js";
-import {getCurrentFileAndDir, getSSLOptions} from "./utils.js";
+import {getCurrentFileAndDir, getSSLOptions, getShiftedDate} from "./utils.js";
 
 const app = express();
 const PORT = 3000;
@@ -78,10 +78,10 @@ async function main() {
         });
     }
 
+    // import { getShiftedDate } from "./utils.js";
+
     setInterval(async () => {
         const expMin = 2 * 60 * 1000;
-
-        import {getShiftedDate} from "./utils.js";
         const expDate = getShiftedDate(expMin);
 
         let query = {
