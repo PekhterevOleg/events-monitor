@@ -57,21 +57,27 @@ $action = {
 
 Register-ObjectEvent -InputObject $watcher -EventName 'EventRecordWritten' -Action $action
 
-$timer = New-Object System.Timers.Timer
-$timer.Interval = $json.watcher_interval
+$timerCloseApp = New-Object System.Timers.Timer
+$timerCloseApp.Interval = $json.close_app_interval
 
-Register-ObjectEvent -InputObject $timer -EventName Elapsed -Action {
+$timerSendData = New-Object System.Timers.Timer
+$timerSendData.Interval = $json.send_data_interval
+
+Register-ObjectEvent -InputObject $timerCloseApp -EventName Elapsed -Action {
     $stop_file = [Environment]::GetEnvironmentVariable('STOP_FILE_NAME', [EnvironmentVariableTarget]::Machine)
     if (Test-Path $stop_file) {
-            try {
-                Remove-Item -Path $stop_file -ErrorAction Stop
-            } catch {
-                $errorMsg = $error[0].InvocationInfo.InvocationName + " " + $error[0].exception.message
-                global:WriteErrorToLogFile -LogFilePath $LOG_FILE_PATH -ErrorRecord $_ -Message $errorMsg
-            }
-            Get-EventSubscriber | Unregister-Event
-            [Environment]::Exit(0)
+        try {
+            Remove-Item -Path $stop_file -ErrorAction Stop
+        } catch {
+            $errorMsg = $error[0].InvocationInfo.InvocationName + " " + $error[0].exception.message
+            global:WriteErrorToLogFile -LogFilePath $LOG_FILE_PATH -ErrorRecord $_ -Message $errorMsg
+        }
+        Get-EventSubscriber | Unregister-Event
+        [Environment]::Exit(0)
     }
+}
+
+Register-ObjectEvent -InputObject $timerSendData -EventName Elapsed -Action {
     $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ssZ"
     try {
         sendMessageToMonitor(@{"serverName"=$CompName; "timestamp"=$currentTime})
@@ -80,4 +86,6 @@ Register-ObjectEvent -InputObject $timer -EventName Elapsed -Action {
         WriteErrorToLogFile -LogFilePath $LOG_FILE_PATH -ErrorRecord $_ -Message $errorMsg
     }
 }
-$timer.Start()
+
+$timerCloseApp.Start()
+$timerSendData.Start()

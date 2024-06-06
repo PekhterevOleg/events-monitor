@@ -389,8 +389,10 @@
                             removeClassOnElement(divEl);
                             applyClassOnElement(divEl, circleInActive);
                         } else {
-                            const classes = divInActive.split(' ');
-                            divEl.classList.add(...classes);
+                            removeClassOnElement(divEl);
+                            applyClassOnElement(divEl, divInActive);
+                            // const classes = divInActive.split(' ');
+                            // divEl.classList.add(...classes);
                         }
                         break;
                     case HBStatus.ACTIVE:
@@ -398,6 +400,7 @@
                             removeClassOnElement(divEl);
                             applyClassOnElement(divEl, circleActive);
                         } else {
+                            removeClassOnElement(divEl);
                             applyClassOnElement(divEl, divActive);
                         }
                         break;
@@ -406,6 +409,7 @@
                             removeClassOnElement(divEl);
                             applyClassOnElement(divEl,circleError);
                         } else {
+                            removeClassOnElement(divEl);
                             applyClassOnElement(divEl, divError);
                         }
                         break;
