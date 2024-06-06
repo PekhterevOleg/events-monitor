@@ -155,6 +155,10 @@
             background-color: var(--circle-error-lighter);
         }
 
+        .timer {
+            color: dodgerblue;
+        }
+
     </style>
 
 </head>
@@ -167,58 +171,70 @@
                 <div class="table">Сервер</div>
                 <div class="table">heartbeat получен</div>
                 <div class="table">Статус</div>
-                <div class="table">Время Offline</div>
-
-<!--                <div class="grid-sub-item">Какой-то текс</div>-->
+                <div class="table">Время Offline&nbsp;<span class="timer">ДД:чч:мм</span></div>
             </div>
             <div class="grid-sub-container">
                 <div class="table">Инд.</div>
                 <div class="table">Сервер</div>
                 <div class="table">heartbeat получен</div>
                 <div class="table">Статус</div>
-                <div class="table">Время Offline</div>
+                <div class="table">Время Offline&nbsp;<span class="timer">ДД:чч:мм</span></div>
             </div>
             <div class="grid-sub-container">
                 <div class="table">Инд.</div>
                 <div class="table">Сервер</div>
                 <div class="table">heartbeat получен</div>
                 <div class="table">Статус</div>
-                <div class="table">Время Offline</div>
+                <div class="table">Время Offline&nbsp;<span class="timer">ДД:чч:мм</span></div>
             </div>
             <div class="grid-sub-container">
                 <div class="table">Инд.</div>
                 <div class="table">Сервер</div>
                 <div class="table">heartbeat получен</div>
                 <div class="table">Статус</div>
-                <div class="table">Время Offline</div>
+                <div class="table">Время Offline&nbsp;<span class="timer">ДД:чч:мм</span></div>
             </div>
             <div class="grid-sub-container">
                 <div class="table">Инд.</div>
                 <div class="table">Сервер</div>
                 <div class="table">heartbeat получен</div>
                 <div class="table">Статус</div>
-                <div class="table">Время Offline</div>
+                <div class="table">Время Offline&nbsp;<span class="timer">ДД:чч:мм</span></div>
             </div>
             <div class="grid-sub-container">
                 <div class="table">Инд.</div>
                 <div class="table">Сервер</div>
                 <div class="table">heartbeat получен</div>
                 <div class="table">Статус</div>
-                <div class="table">Время Offline</div>
+                <div class="table">Время Offline&nbsp;<span class="timer">ДД:чч:мм</span></div>
             </div>
             <div class="grid-sub-container">
                 <div class="table">Инд.</div>
                 <div class="table">Сервер</div>
                 <div class="table">heartbeat получен</div>
                 <div class="table">Статус</div>
-                <div class="table">Время Offline</div>
+                <div class="table">Время Offline&nbsp;<span class="timer">ДД:чч:мм</span></div>
             </div>
             <div class="grid-sub-container">
                 <div class="table">Инд.</div>
                 <div class="table">Сервер</div>
                 <div class="table">heartbeat получен</div>
                 <div class="table">Статус</div>
-                <div class="table">Время Offline</div>
+                <div class="table">Время Offline&nbsp;<span class="timer">ДД:чч:мм</span></div>
+            </div>
+            <div class="grid-sub-container">
+                <div class="table">Инд.</div>
+                <div class="table">Сервер</div>
+                <div class="table">heartbeat получен</div>
+                <div class="table">Статус</div>
+                <div class="table">Время Offline&nbsp;<span class="timer">ДД:чч:мм</span></div>
+            </div>
+            <div class="grid-sub-container">
+                <div class="table">Инд.</div>
+                <div class="table">Сервер</div>
+                <div class="table">heartbeat получен</div>
+                <div class="table">Статус</div>
+                <div class="table">Время Offline&nbsp;<span class="timer">ДД:чч:мм</span></div>
             </div>
         </div>
     </div>
@@ -534,7 +550,7 @@
             minutes = minutes.length < 2? '0' + minutes: minutes;
             // seconds = seconds.length < 2? '0' + seconds: seconds;
 
-            return `Д ${days}:${hours}:${minutes}`;
+            return `${days}:${hours}:${minutes}`;
             // return `Д ${days}:${hours}:${minutes}:${seconds}`;
         }
 
