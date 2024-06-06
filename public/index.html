@@ -246,10 +246,10 @@
         }
     </script>
 
-
     <script>
         const ws = new WebSocket(`wss://${location.host}`);
         const expiredObject = {};
+        const offlineServers = [];
 
         const HBStatus = {
             UNDEFINED: 'undefined',
@@ -275,7 +275,7 @@
             const serverObjs = JSON.parse(e.data);
 
             serverObjs.forEach(server => {
-                console.log(server.name)
+                console.log(server.name);
                 const allDivs = searchAllDivs(server.name) || addElements(server);
                 if (!allDivs) {
                     console.log(`Для данного ${server.name} нет доступного контейнера для создания уведомления`);
@@ -286,9 +286,13 @@
 
                 if (server.heartbeat === HBStatus.INACTIVE && !expiredObject[server._id]) {
                     flickerDivs(allDivs, server);
+                    const offlineTimerToStr = getOfflineTimer(server.timestamp);
+                    updateOfflineTextOnDiv(server.name, offlineTimerToStr);
+                    offlineServers.push(server);
                 } else if (expiredObject[server._id]) {
                     clearInterval(expiredObject[server._id]);
                     delete expiredObject[server._id];
+                    delete offlineServers.find(serverOffline => server.name === serverOffline.name);
                 }
             })
         })
@@ -390,58 +394,6 @@
                         }
                         break;
                 }
-                // if (isCircle(divEl)) {
-                //
-                //     heartbeat === HBStatus.UNDEFINED
-                //         ? applyClassOnElement(divEl, circleInActive)
-                //   : heartbeat === HBStatus.ACTIVE
-                //         ? applyClassOnElement(divEl, circleActive)
-                //   : heartbeat === HBStatus.INACTIVE
-                //         ? applyClassOnElement(divEl, circleError)
-                //         : undefined;
-                // } else {
-                //
-                //     heartbeat === HBStatus.UNDEFINED
-                //         ? divEl.classList.add(...divInActive.split(' '))
-                //   : heartbeat === HBStatus.ACTIVE
-                //         ? applyClassOnElement(divEl, circleActive)
-                //   : heartbeat === HBStatus.INACTIVE
-                //         ? applyClassOnElement(divEl, divError)
-                //         : undefined;
-                //
-                // }
-
-
-                // if (heartbeat === HBStatus.UNDEFINED && isCircle(divEl)) {
-                //     removeClassOnElement(divEl);
-                //     applyClassOnElement(divEl, circleInActive);
-                // }
-                //
-                // else if (heartbeat === HBStatus.UNDEFINED) {
-                //     removeClassOnElement(divEl);
-                //     const classes = divInActive.split(' ');
-                //     divEl.classList.add(...classes);
-                // }
-                //
-                // else if (heartbeat === HBStatus.ACTIVE && isCircle(divEl)) {
-                //     removeClassOnElement(divEl);
-                //     applyClassOnElement(divEl, circleActive);
-                // }
-                //
-                // else if (heartbeat === HBStatus.ACTIVE) {
-                //     removeClassOnElement(divEl);
-                //     applyClassOnElement(divEl, divActive);
-                // }
-                //
-                // else if (heartbeat === HBStatus.INACTIVE && isCircle(divEl)) {
-                //     removeClassOnElement(divEl);
-                //     applyClassOnElement(divEl, circleError);
-                // }
-                //
-                // else if (heartbeat === HBStatus.INACTIVE) {
-                //     removeClassOnElement(divEl);
-                //     applyClassOnElement(divEl, divError);
-                // }
             })
         }
 
@@ -541,6 +493,63 @@
                 }
             })
         }
+
+        /**
+         * @param date
+         * @returns {number}
+         */
+        function getTimeDifferenceInMilliseconds(date) {
+            const currentDate = new Date();
+            return currentDate - date;
+        }
+
+        /**
+         * @param milliseconds
+         * @returns {String}
+         */
+        function convertMillisecondsInOfflineTimer(milliseconds) {
+            const oneDay = 24 * 60 * 1000;
+            const oneHour = 60 * 60 * 1000;
+            const oneMinute = 60 * 1000;
+            const oneSecond = 1000;
+
+            const days = Math.floor(milliseconds / oneDay);
+            const hours = Math.floor(milliseconds % oneDay / oneHour);
+            const minutes = Math.floor(milliseconds % oneHour / oneMinute);
+            const seconds = Math.floor((milliseconds / oneSecond) % 60);
+
+            return `Дней: ${days}, Часов: ${hours}, Минут: ${minutes}, Секунд: ${seconds}`;
+        }
+
+        /**
+         * @param {Date} timestamp
+         * @returns {String}
+         */
+        function getOfflineTimer(timestamp) {
+            const milliseconds = getTimeDifferenceInMilliseconds(timestamp);
+            return convertMillisecondsInOfflineTimer(milliseconds);
+        }
+
+        /**
+         * @param {String} serverName
+         * @param {String} text
+         * @returns {void}
+         */
+        function updateOfflineTextOnDiv(serverName, text) {
+            const allDivs = searchAllDivs(serverName);
+            Array.from(allDivs).at(-1).textContent = text;
+        }
+
+        function watcherInactiveServer() {
+            setInterval(() => {
+                offlineServers.forEach(server => {
+                    const offlineTimerText = getOfflineTimer(server.timestamp);
+                    updateOfflineTextOnDiv(server.name, offlineTimerText);
+                })
+            }, 5 * 1000)
+        }
+
+        watcherInactiveServer();
 
     </script>
 
