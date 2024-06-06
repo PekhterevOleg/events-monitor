@@ -97,7 +97,7 @@
         }
         .circle-active > div {
             height: 85%;
-            width: 85%;
+            width: 55%;
             border-radius: 50%;
             background-color: var(--circle-active);
             transition: background-color ease-in 500ms;
@@ -113,7 +113,7 @@
 
         .circle-error > div {
             height: 85%;
-            width: 85%;
+            width: 55%;
             border-radius: 50%;
             background-color: var(--circle-error);
             transition: background-color ease-in 500ms;
@@ -499,8 +499,19 @@
          * @returns {number}
          */
         function getTimeDifferenceInMilliseconds(date) {
-            const currentDate = new Date();
-            return currentDate - date;
+            const dateNow = new Date();
+            date = new Date(date);
+            const expLocalDate = new Date(
+                date.getUTCFullYear(),
+                date.getUTCMonth(),
+                date.getUTCDate(),
+                date.getUTCHours(),
+                date.getUTCMinutes(),
+                date.getUTCSeconds(),
+                date.getUTCMilliseconds()
+            );
+
+            return dateNow - expLocalDate;
         }
 
         /**
@@ -508,17 +519,23 @@
          * @returns {String}
          */
         function convertMillisecondsInOfflineTimer(milliseconds) {
-            const oneDay = 24 * 60 * 1000;
+            const oneDay = 24 * 60 * 60* 1000;
             const oneHour = 60 * 60 * 1000;
             const oneMinute = 60 * 1000;
-            const oneSecond = 1000;
+            // const oneSecond = 1000;
 
-            const days = Math.floor(milliseconds / oneDay);
-            const hours = Math.floor(milliseconds % oneDay / oneHour);
-            const minutes = Math.floor(milliseconds % oneHour / oneMinute);
-            const seconds = Math.floor((milliseconds / oneSecond) % 60);
+            let days = (Math.floor(milliseconds / oneDay)).toString();
+            let hours = (Math.floor(milliseconds % oneDay / oneHour)).toString();
+            let minutes = (Math.floor(milliseconds % oneHour / oneMinute)).toString();
+            // let seconds = (Math.floor((milliseconds / oneSecond) % 60)).toString();
 
-            return `Дней: ${days}, Часов: ${hours}, Минут: ${minutes}, Секунд: ${seconds}`;
+            days = days.length < 2? '0' + days: days;
+            hours = hours.length < 2? '0' + hours: hours;
+            minutes = minutes.length < 2? '0' + minutes: minutes;
+            // seconds = seconds.length < 2? '0' + seconds: seconds;
+
+            return `Д ${days}:${hours}:${minutes}`;
+            // return `Д ${days}:${hours}:${minutes}:${seconds}`;
         }
 
         /**
@@ -546,7 +563,7 @@
                     const offlineTimerText = getOfflineTimer(server.timestamp);
                     updateOfflineTextOnDiv(server.name, offlineTimerText);
                 })
-            }, 5 * 1000)
+            }, 5 * 60 * 1000)
         }
 
         watcherInactiveServer();
