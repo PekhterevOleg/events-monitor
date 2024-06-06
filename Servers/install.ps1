@@ -1,12 +1,16 @@
 ﻿$ENV_CONFIG_JSON_NAME = "PATH_JSON_CONFIG"
 $NAME_CONFIG = "config_event.json"
-$PATH_TO_CONFIG_JSON = "\\" + $env:USERDNSDOMAIN + "\NETLOGON\eventwatcher\" + "$NAME_CONFIG"
+$CONFIG_JSON_VALUE = (Get-Location).Path + "\" + $NAME_CONFIG
 
+
+<#
+$PATH_TO_CONFIG_JSON = "\\" + $env:USERDNSDOMAIN + "\NETLOGON\eventwatcher\" + "$NAME_CONFIG"
 if (Test-Path $PATH_TO_CONFIG_JSON) {
     $CONFIG_JSON_VALUE = $PATH_TO_CONFIG_JSON #$env:USERDNSDOMAIN + "\NETLOGON\eventwatcher\" + "$NAME_CONFIG"
 } else {
     $CONFIG_JSON_VALUE = (Get-Location).Path + "\" + $NAME_CONFIG
 }
+#>
 
 [Environment]::SetEnvironmentVariable($ENV_CONFIG_JSON_NAME, $CONFIG_JSON_VALUE, [EnvironmentVariableTarget]::Machine)
 

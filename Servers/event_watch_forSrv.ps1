@@ -33,16 +33,7 @@ $watcher = [System.Diagnostics.Eventing.Reader.EventLogWatcher]::new($query)
 $watcher.Enabled = $true
 
 function global:sendMessageToTelegramm($uri) {
-    try {
-        Invoke-RestMethod -Uri $uri -Method Post -ErrorAction stop
-    } catch [System.Net.WebException] {
-        if ($_.exception.status -eq [System.Net.WebExceptionStatus]::SecureChannelFailure) {
-            if (-not ([Net.ServicePointManager]::SecurityProtocol -match 'tls12')) {
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Invoke-RestMethod -Uri $uri -Method Post -ErrorAction stop
-            } else { throw $_ }
-        } else { throw $_ }
-    }
+    Invoke-RestMethod -Uri $uri -Method Post -ErrorAction stop
 }
 
 $action = {
@@ -67,7 +58,7 @@ $action = {
 Register-ObjectEvent -InputObject $watcher -EventName 'EventRecordWritten' -Action $action
 
 $timer = New-Object System.Timers.Timer
-$timer.Interval = 2000
+$timer.Interval = $json.watcher_interval
 
 Register-ObjectEvent -InputObject $timer -EventName Elapsed -Action {
     $stop_file = [Environment]::GetEnvironmentVariable('STOP_FILE_NAME', [EnvironmentVariableTarget]::Machine)
