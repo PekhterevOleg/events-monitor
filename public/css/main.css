@@ -56,20 +56,19 @@ body {
     padding: 10px;
 }
 
-.circle,
-.circle-active,
-.circle-inactive,
-.circle-error {
+.circle {
     display: flex;
     justify-content: center;
     align-items: center;
+}
 
+.circle > div {
     height: 85%;
     width: 55%;
     border-radius: 50%;
     transition: background-color ease-in 500ms;
-
 }
+
 .circle-active > div {
     background-color: var(--circle-active);
 }
@@ -82,15 +81,19 @@ body {
     background-color: var(--circle-error);
 }
 
+.circle-error-lighter > div {
+    background-color: var(--circle-error-lighter);
+}
+
 .table {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     border: 1px solid black;
     border-radius: 5px;
     font-size: 1.1rem;
     padding: 8px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .color-inactive {
@@ -110,10 +113,6 @@ body {
 .color-error-lighter {
     color: var(--color-error-lighter);
     font-weight: bold;
-}
-
-.circle-error-lighter > div {
-    background-color: var(--circle-error-lighter);
 }
 
 .timer {
