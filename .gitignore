@@ -1,3 +1,4 @@
+.env
 package-lock.json
 package.json
 LdapObjDB.db
@@ -7,4 +8,3 @@ certs
 config.js
 async.js
 test.html
-.env
