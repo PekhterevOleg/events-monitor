@@ -156,11 +156,11 @@ function shortTimestamp(timestamp) {
  * @param {Server} server
  */
 function updateTextEl(elms, server) {
-
     const timestamp = server.timestamp? shortTimestamp(server.timestamp): 'Inactive';
-    let hbStatus = 'Online'
+    let hbStatus = 'Online';
+
     if (server.heartbeat !== HBStatus.ACTIVE) {
-        hbStatus = 'Offline'
+        hbStatus = 'Offline';
     }
 
     const elementsText = {
@@ -235,6 +235,3 @@ function updateOfflineTextOnDiv(serverName, text) {
     const allDivs = searchAllDivs(serverName);
     Array.from(allDivs).at(-1).textContent = text;
 }
-
-
-
