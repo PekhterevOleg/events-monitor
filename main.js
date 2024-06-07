@@ -1,13 +1,10 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import https from 'https';
-import { fileURLToPath } from 'url';
 import { WebSocketServer, WebSocket } from 'ws';
-
-import fs from 'fs';
-import path from 'path';
-
 import cors from 'cors';
+
+import path from 'path';
 
 import {getLDAPObj} from "./fldap.js";
 import * as moduleDB from "./database.js";
@@ -38,16 +35,16 @@ async function main() {
     }
 
     app.post('/data', async (req, res) => {
-        const { serverName, timestamp } = req.body;
+        const {serverName, timestamp} = req.body;
         const query = {};
-              query.cn = serverName;
+        query.cn = serverName;
 
         const update = {
             $set: {
                 timestamp: new Date(timestamp),
                 heartbeat: HBStatus.ACTIVE
             },
-            $unset: {send: true} //удаляем поле из объекта neDB если имеется
+            $unset: {send: true} //удаляем поле из объекта neDB если имеются
         };
 
         await moduleDB.updateObjToDB(db, query, update);
@@ -63,7 +60,7 @@ async function main() {
 
     const options = getSSLOptions(__dirname);
     const server = https.createServer(options, app);
-    const wss = new WebSocketServer({ server });
+    const wss = new WebSocketServer({server});
 
     wss.on('connection', async (ws, req) => {
         const ldapObj = await moduleDB.getObjFromDB(db);
@@ -78,8 +75,6 @@ async function main() {
         });
     }
 
-    // import { getShiftedDate } from "./utils.js";
-
     setInterval(async () => {
         const expMin = 2 * 60 * 1000;
         const expDate = getShiftedDate(expMin);
@@ -92,7 +87,7 @@ async function main() {
         if (findObjExp.length) {
             const srvNames = findObjExp.map(obj => obj.name);
             await moduleDB.updateObjToDB(db, query, {$set: {heartbeat: HBStatus.INACTIVE}});
-            broadcastData(await getObjFromDB(db,{name: {$in: srvNames}} ));
+            broadcastData(await getObjFromDB(db, {name: {$in: srvNames}}));
             await moduleDB.updateObjToDB(db, {name: {$in: srvNames}}, {$set: {send: true}})
         }
     }, 2 * 60 * 1000)

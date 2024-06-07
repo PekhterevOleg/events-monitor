@@ -60,12 +60,12 @@ async function searchObj(client, settings) {
                 obj.timestamp = null;
                 obj.heartbeat = HBStatus.UNDEFINED;
                 searchObj.push(obj);
-            })
+            });
 
             res.on('end', () => {
                 client.unbind( err => reject(err) );
                 resolve(searchObj);
-            })
+            });
         })
     })
 }
@@ -112,8 +112,8 @@ function bindLdap(client, settings) {
                 reject(err);
             }
             resolve();
-        })
-    })
+        });
+    });
 }
 
 /**
@@ -159,9 +159,6 @@ async function getLDAPObj(settings) {
         process.exit(1);
     }
 }
-
-// getLDAPObj(ldapConfig).then(res => { console.log(res) });
-
 
 export { getLDAPObj };
 
