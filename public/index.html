@@ -58,25 +58,6 @@
             padding: 5px;
         }
 
-        /*.grid-sub-item {*/
-        /*    display: flex;*/
-        /*    justify-content: center;*/
-        /*    border: 1px black solid;*/
-        /*}*/
-
-        /*.container {*/
-        /*    display: grid;*/
-        /*    width: 1000px;*/
-        /*    height: 200px;*/
-
-        /*    grid-template-columns: 50px repeat(4, 1fr);*/
-        /*    grid-auto-rows: 50px;*/
-        /*    gap: 2px;*/
-
-        /*    font-family: monospace;*/
-        /*    font-size: 1.2rem;*/
-        /*}*/
-
         .item {
             display: flex;
             justify-content: center;
@@ -124,7 +105,6 @@
             border-radius: 5px;
             font-size: 1.1rem;
             padding: 8px;
-            /*margin-bottom: 7px;*/
 
             display: flex;
             justify-content: center;
@@ -269,8 +249,8 @@
 
         const HBStatus = {
             UNDEFINED: 'undefined',
-            ACTIVE: 'active',
-            INACTIVE: 'inactive'
+               ACTIVE: 'active',
+             INACTIVE: 'inactive'
         };
 
         /**
@@ -318,8 +298,6 @@
          * @returns {HTMLDivElement[]}
          */
         function addElements(server) {
-            console.log(`addElements serrverName: ${server.name}`);
-
             const elements = [];
 
             const heartbeatTimestamp = server.timestamp? shortTimestamp(server.timestamp): 'Inactive';
@@ -364,8 +342,6 @@
          * @returns {void}
          */
         function addClassElements(elms, heartbeat, serverName) {
-            // const typeStyle = heartbeat === null? 'inactive': heartbeat === true? 'active': 'error';
-
             const attr = {
                 name: 'server-name',
                 value: serverName
@@ -381,7 +357,6 @@
 
             elms.forEach(divEl => {
                 divEl.setAttribute(attr.name, attr.value);
-                // removeClassOnElement(divEl);
 
                 switch (heartbeat) {
                     case HBStatus.UNDEFINED:
@@ -391,8 +366,6 @@
                         } else {
                             removeClassOnElement(divEl);
                             applyClassOnElement(divEl, divInActive);
-                            // const classes = divInActive.split(' ');
-                            // divEl.classList.add(...classes);
                         }
                         break;
                     case HBStatus.ACTIVE:
@@ -515,56 +488,52 @@
         }
 
         /**
-         * @param date
-         * @returns {number}
-         */
-        function getTimeDifferenceInMilliseconds(date) {
-            const dateNow = new Date();
-            date = new Date(date);
-            const expLocalDate = new Date(
-                date.getUTCFullYear(),
-                date.getUTCMonth(),
-                date.getUTCDate(),
-                date.getUTCHours(),
-                date.getUTCMinutes(),
-                date.getUTCSeconds(),
-                date.getUTCMilliseconds()
-            );
-
-            return dateNow - expLocalDate;
-        }
-
-        /**
-         * @param milliseconds
-         * @returns {String}
-         */
-        function convertMillisecondsInOfflineTimer(milliseconds) {
-            const oneDay = 24 * 60 * 60* 1000;
-            const oneHour = 60 * 60 * 1000;
-            const oneMinute = 60 * 1000;
-            // const oneSecond = 1000;
-
-            let days = (Math.floor(milliseconds / oneDay)).toString();
-            let hours = (Math.floor(milliseconds % oneDay / oneHour)).toString();
-            let minutes = (Math.floor(milliseconds % oneHour / oneMinute)).toString();
-            // let seconds = (Math.floor((milliseconds / oneSecond) % 60)).toString();
-
-            days = days.length < 2? '0' + days: days;
-            hours = hours.length < 2? '0' + hours: hours;
-            minutes = minutes.length < 2? '0' + minutes: minutes;
-            // seconds = seconds.length < 2? '0' + seconds: seconds;
-
-            return `${days}:${hours}:${minutes}`;
-            // return `Д ${days}:${hours}:${minutes}:${seconds}`;
-        }
-
-        /**
          * @param {Date} timestamp
          * @returns {String}
          */
         function getOfflineTimer(timestamp) {
-            const milliseconds = getTimeDifferenceInMilliseconds(timestamp);
-            return convertMillisecondsInOfflineTimer(milliseconds);
+            const milliseconds = _getTimeDifferenceInMilliseconds(timestamp);
+            return _convertMillisecondsInOfflineTimer(milliseconds);
+
+            /**
+             * @param date
+             * @returns {number}
+             */
+            function _getTimeDifferenceInMilliseconds(date) {
+                const dateNow = new Date();
+                date = new Date(date);
+                const expLocalDate = new Date(
+                    date.getUTCFullYear(),
+                    date.getUTCMonth(),
+                    date.getUTCDate(),
+                    date.getUTCHours(),
+                    date.getUTCMinutes(),
+                    date.getUTCSeconds(),
+                    date.getUTCMilliseconds()
+                );
+
+                return dateNow - expLocalDate;
+            }
+
+            /**
+             * @param milliseconds
+             * @returns {String}
+             */
+            function _convertMillisecondsInOfflineTimer(milliseconds) {
+                const oneDay = 24 * 60 * 60* 1000;
+                const oneHour = 60 * 60 * 1000;
+                const oneMinute = 60 * 1000;
+
+                let days = (Math.floor(milliseconds / oneDay)).toString();
+                let hours = (Math.floor(milliseconds % oneDay / oneHour)).toString();
+                let minutes = (Math.floor(milliseconds % oneHour / oneMinute)).toString();
+
+                days = days.length < 2? '0' + days: days;
+                hours = hours.length < 2? '0' + hours: hours;
+                minutes = minutes.length < 2? '0' + minutes: minutes;
+
+                return `${days}:${hours}:${minutes}`;
+            }
         }
 
         /**
