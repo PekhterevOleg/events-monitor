@@ -146,16 +146,16 @@ function createLdapClient(url) {
  * @returns {Promise<LDAPObject[]>}
  */
 async function getLDAPObj(settings) {
-    const client = await createLdapClient(settings.url);
+    let client;
     try {
+        client = await createLdapClient(settings.url);
         await bindLdap(client, ldapConfig);
-    } catch (err) {
-        console.error('Ошибка выполнения метода bind LDAP', err.message);
-    }
-    try {
         return await searchObj(client, settings);
     } catch (err) {
-        console.error('Ошибка выполнения поиска объектов LDAP', err.message);
+        if (client) {
+            client.unbind();
+        }
+        console.log('Ошибка выполнения Ldap операции', err.message);
         process.exit(1);
     }
 }
