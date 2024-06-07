@@ -24,6 +24,7 @@ ws.addEventListener('message', (e) => {
      * @type {Server[]}
      */
     const serverObjs = JSON.parse(e.data);
+    watcherInactiveServer();
 
     serverObjs.forEach(server => {
         console.log(server.name);

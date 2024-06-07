@@ -5,6 +5,8 @@
     <title>Title</title>
     <script src="scripts/dom.js" defer></script>
     <script src="scripts/main.js" defer></script>
+    <script src="scripts/subgrid.js" defer></script>
+    <script src="scripts/timers.js" defer></script>
 
     <style>
         :root {
@@ -146,7 +148,6 @@
 
 </head>
 <body>
-
     <div class="root-flex-container">
         <div class="root-grid-container">
             <div class="grid-sub-container">
@@ -221,29 +222,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        /**
-         * @type {HTMLDivElement[]}
-         */
-        let gridSubContainers = Array.from(
-            document.querySelectorAll('.grid-sub-container')
-        );
-
-        /**
-         *
-         * @type {Generator<HTMLDivElement, void, *>}
-         */
-        const containerGen = nextContainerGen();
-
-        function* nextContainerGen() {
-            for (let container of gridSubContainers) {
-                while (container.children.length <= 35) {
-                    yield container;
-                }
-            }
-        }
-    </script>
-
 </body>
 </html>
