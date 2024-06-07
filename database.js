@@ -1,8 +1,5 @@
-import { ldapConfig } from './config.js';
-import { getLDAPObj } from "./fldap.js";
 import Datastore from 'nedb';
 import { join } from "path";
-import {format} from "date-fns";
 
 /**
  * @typedef {Object} LDAPObject
@@ -95,9 +92,6 @@ function updateObjToDB(db, query, update) {
                 reject(err);
             }
             resolve();
-            // getObjFromDB(db, query)
-            //     .then(docs => resolve(docs))
-            //     .catch(err => reject(err));
         })
     })
 }
@@ -109,58 +103,3 @@ export {
     createOrReturnDBLdapObj,
     updateObjToDB
 };
-
-async function testingGetObjDB(query) {
-    const db = createOrReturnDBLdapObj();
-    return await getObjFromDB(db, query);
-}
-
-async function testingUpdateDBObj() {
-    const db = createOrReturnDBLdapObj();
-    const query = {cn: 'srv-co-vdb01'};
-    const date = new Date();
-    const expDate = new Date((date.getTime() - date.getTimezoneOffset() * 60000)-5*60*1000);
-    const update = {$set: {timestamp: expDate}};
-    return await updateAndReturnObjToDB(db, query, update)
-}
-
-async function testingReturnDBLdapObj() {
-    const db = createOrReturnDBLdapObj();
-
-    if (await isEmptyDB(db)) {
-        const ldpObj = await getLDAPObj(ldapConfig);
-        try {
-            await writeLDAPObjToDB(db, ldpObj);
-        } catch (err) {
-            console.error(err.message);
-            process.exit(1);
-        }
-    }
-
-    return await getObjFromDB(db);
-}
-
-// testingGetObjDB({_id: '1w2BJonCxLEAKY1Z'}).then(docs => {console.log(docs)})
-
-// const date = new Date();
-// const localD = new Date((date.getTime() - date.getTimezoneOffset() * 60000)-5*60*1000);
-//
-// testingGetObjDB({timestamp: {$ne: null, $lte: localD}}).then(docs => {console.log(docs)})
-
-// testingGetObjDB({timestamp: {$ne: null}}).then(docs => {
-//     console.log(docs)
-// })
-
-// testingUpdateDBObj().then(docs => {
-//     console.log(docs);
-// });
-
-// testingReturnDBLdapObj();
-
-
-// const db = createOrReturnDBLdapObj();
-// const query = {name: 'SRV-CO-VVEEAM03', timestamp: null};
-// const update = {timestamp: new Date()}
-// updateAndReturnObjToDB(db, query, update).then(docs => console.log(docs));
-//
-// testingGetObjDB({name: 'srv-co-vadfs01', timestamp: null}).then(docs => console.log(docs))
