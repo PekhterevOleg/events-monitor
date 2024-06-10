@@ -1,6 +1,4 @@
 .env
-package-lock.json
-package.json
 LdapObjDB.db
 node_modules
 certs
