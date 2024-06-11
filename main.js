@@ -98,8 +98,8 @@ async function main() {
         console.log(`[${new Date()}] Server is running on http://0.0.0.0:${PORT}`);
     });
 
-    process.on('SIGTERM', shutdown);
-    process.on('SIGINT', shutdown);
+    process.on('SIGTERM', () => shutdown(server, db));
+    process.on('SIGINT', () => shutdown(server, db));
 }
 
 main();

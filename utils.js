@@ -57,7 +57,8 @@ function getSSLOptions(dirName) {
 /**
  *
  * @param {HttpsServer} server
- * @param {Datastore} db
+ * @param {exports} db
+ * @returns void
  */
 function shutdown(server, db) {
     console.log('Получен сигнал на завершение работы приложения');
