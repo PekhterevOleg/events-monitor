@@ -66,9 +66,10 @@ function shutdown(server, db) {
             console.error(`Ошибка завершения работы сервера: ${err.message}`);
             process.exit(1);
         }
-        console.log('Сервер успешно завершил работу')
+        console.log('Сервер успешно завершил работу');
         db.persistence.compactDatafile();
         console.log(`Быза данных NeDB сохранена в ${db.filename}`);
+        process.exit(0);
     })
 }
 
