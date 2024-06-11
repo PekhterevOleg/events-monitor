@@ -10,6 +10,6 @@
     "xmlquery": "*[System[(EventID=21 or EventID=22 or EventID=24 or EventID=25 or EventID=41 or EventID=42)]]",
     "server_mon_uri": "https://svcmon.achimgaz.ru:3000/data",
     "close_app_interval": 2000,
-    "send_data_interval": 3000
+    "heartbeat_interval": 120000
 }
 

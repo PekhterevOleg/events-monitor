@@ -60,8 +60,8 @@ Register-ObjectEvent -InputObject $watcher -EventName 'EventRecordWritten' -Acti
 $timerCloseApp = New-Object System.Timers.Timer
 $timerCloseApp.Interval = $json.close_app_interval
 
-$timerSendData = New-Object System.Timers.Timer
-$timerSendData.Interval = $json.send_data_interval
+$timerHeartbeat = New-Object System.Timers.Timer
+$timerHeartbeat.Interval = $json.heartbeat_interval
 
 Register-ObjectEvent -InputObject $timerCloseApp -EventName Elapsed -Action {
     $stop_file = [Environment]::GetEnvironmentVariable('STOP_FILE_NAME', [EnvironmentVariableTarget]::Machine)
@@ -77,7 +77,7 @@ Register-ObjectEvent -InputObject $timerCloseApp -EventName Elapsed -Action {
     }
 }
 
-Register-ObjectEvent -InputObject $timerSendData -EventName Elapsed -Action {
+Register-ObjectEvent -InputObject $timerHeartbeat -EventName Elapsed -Action {
     $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ssZ"
     try {
         sendMessageToMonitor(@{"serverName"=$CompName; "timestamp"=$currentTime})
@@ -88,4 +88,4 @@ Register-ObjectEvent -InputObject $timerSendData -EventName Elapsed -Action {
 }
 
 $timerCloseApp.Start()
-$timerSendData.Start()
+$timerHeartbeat.Start()
