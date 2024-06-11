@@ -1,9 +1,8 @@
-version: '3.8'
 services:
   app:
+    # image: events-monitor
+    container_name: events_monitor
     build: .
     ports:
       - "3000:3000"
-    volumes:
-      - .:/app
-    command: npm start
+    command: ["npm", "start"]
