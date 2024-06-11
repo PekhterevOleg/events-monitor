@@ -3,6 +3,8 @@ services:
     # image: events-monitor
     container_name: events_monitor
     build: .
+    environment:
+      - TZ=Asia/Yekaterinburg
     ports:
       - "3000:3000"
     command: ["node", "main.js"]

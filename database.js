@@ -45,10 +45,6 @@ function isEmptyDB(db, query={}) {
 }
 
 /**
- * @typedef {import('nedb').Datastore} Datastore
- */
-
-/**
  *
  * @param {string} [nameDB='LdapObjDB.db']
  * @returns {Datastore}

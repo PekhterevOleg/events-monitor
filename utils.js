@@ -57,7 +57,7 @@ function getSSLOptions(dirName) {
 /**
  *
  * @param {HttpsServer} server
- * @param {exports} db
+ * @param {Datastore} db
  * @returns void
  */
 function shutdown(server, db) {

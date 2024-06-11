@@ -25,9 +25,9 @@ async function main() {
     const __dirname = getCurrentFileAndDir().__dirname;
 
     if (await moduleDB.isEmptyDB(db)) {
-        const ldapObj = await getLDAPObj(ldapConfig);
+        const ldapObjs = await getLDAPObj(ldapConfig);
         try {
-            await moduleDB.writeLDAPObjToDB(db, ldapObj);
+            await moduleDB.writeLDAPObjToDB(db, ldapObjs);
         } catch (err) {
             console.error(err.message);
             process.exit(1);
@@ -80,6 +80,8 @@ async function main() {
         const expMin = 2 * 60 * 1000;
         const expDate = getShiftedDate(expMin);
 
+        console.log(`Выполнятеся callback таймера обнаружения устаревших объектов < ${expMin} milliseconds`);
+
         let query = {
             timestamp: {$ne: null, $lte: expDate},
             send: {$exists: false}
@@ -87,6 +89,7 @@ async function main() {
         const findObjExp = await moduleDB.getObjFromDB(db, query);
         if (findObjExp.length) {
             const srvNames = findObjExp.map(obj => obj.name);
+            console.log(`Найдены устаревшие объекты: ${srvNames}`);
             await moduleDB.updateObjToDB(db, query, {$set: {heartbeat: HBStatus.INACTIVE}});
             broadcastData(await getObjFromDB(db, {name: {$in: srvNames}}));
             await moduleDB.updateObjToDB(db, {name: {$in: srvNames}}, {$set: {send: true}})

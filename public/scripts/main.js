@@ -27,7 +27,6 @@ ws.addEventListener('message', (e) => {
     watcherInactiveServer();
 
     serverObjs.forEach(server => {
-        console.log(server.name);
         const allDivs = searchAllDivs(server.name) || addElements(server);
         if (!allDivs) {
             console.log(`Для данного ${server.name} нет доступного контейнера для создания уведомления`);
@@ -37,6 +36,7 @@ ws.addEventListener('message', (e) => {
         updateTextEl(allDivs, server);
 
         if (server.heartbeat === HBStatus.INACTIVE && !expiredObject[server._id]) {
+            console.log(`Обнаружен устаревший объект: ${server.name}`);
             flickerDivs(allDivs, server);
             const offlineTimerToStr = getOfflineTimer(server.timestamp);
             updateOfflineTextOnDiv(server.name, offlineTimerToStr);
