@@ -32,9 +32,17 @@ function getCurrentFileAndDir() {
  * @returns {{cert: Buffer, key: Buffer}}
  */
 function getSSLOptions(dirName) {
-    const key = fs.readFileSync(path.join(dirName, 'certs', 'svcmon.key'));
-    const cert = fs.readFileSync(path.join(dirName, 'certs', 'svcmon.crt'));
+    let key;
+    let cert;
 
+    try {
+        key = fs.readFileSync(path.join(dirName, 'certs', 'svcmon.key'));
+        cert = fs.readFileSync(path.join(dirName, 'certs', 'svcmon.crt'));
+
+    } catch (err) {
+        console.error(`Ошибка чтения файлов SSL сертификатов: ${err.message}`);
+        process.exit(1);
+    }
     return { key, cert };
 }
 

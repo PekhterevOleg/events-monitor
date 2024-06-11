@@ -55,6 +55,7 @@ async function main() {
 
     app.get('/status', (req, res) => {
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        console.log(`Client requested /status: ${clientIp}`);
         res.sendFile(path.join(__dirname, 'public', 'index.html'));
     });
 
