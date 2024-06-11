@@ -10,7 +10,7 @@ import {getLDAPObj} from "./fldap.js";
 import * as moduleDB from "./database.js";
 import {ldapConfig, HBStatus} from "./config.js";
 import {getObjFromDB} from "./database.js";
-import {getCurrentFileAndDir, getSSLOptions, getShiftedDate} from "./utils.js";
+import {getCurrentFileAndDir, getSSLOptions, getShiftedDate, shutdown} from "./utils.js";
 
 const app = express();
 const PORT = 3000;
@@ -97,6 +97,9 @@ async function main() {
     server.listen(PORT, '0.0.0.0', () => {
         console.log(`[${new Date()}] Server is running on http://0.0.0.0:${PORT}`);
     });
+
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
 }
 
 main();

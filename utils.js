@@ -46,8 +46,35 @@ function getSSLOptions(dirName) {
     return { key, cert };
 }
 
+/**
+ * @typedef {import('https').Server} HttpsServer
+ */
+
+/**
+ * @typedef {import('nedb').Datastore} Datastore
+ */
+
+/**
+ *
+ * @param {HttpsServer} server
+ * @param {Datastore} db
+ */
+function shutdown(server, db) {
+    console.log('Получен сигнал на завершение работы приложения');
+    server.close((err) => {
+        if (err) {
+            console.error(`Ошибка завершения работы сервера: ${err.message}`);
+            process.exit(1);
+        }
+        console.log('Сервер успешно завершил работу')
+        db.persistence.compactDatafile();
+        console.log(`Быза данных NeDB сохранена в ${db.filename}`);
+    })
+}
+
 export {
     getShiftedDate,
     getCurrentFileAndDir,
-    getSSLOptions
+    getSSLOptions,
+    shutdown
 };
