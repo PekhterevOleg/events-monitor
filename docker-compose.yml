@@ -7,4 +7,5 @@ services:
       - TZ=Asia/Yekaterinburg
     ports:
       - "3000:3000"
-    command: ["node", "main.js"]
+      - "9229:9229"
+    command: ["node", "--inspect=0.0.0.0:9229", "main.js"]
