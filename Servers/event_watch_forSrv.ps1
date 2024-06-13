@@ -14,6 +14,16 @@ function global:WriteErrorToLogFile {
         [string]$LogFilePath,
         [string]$Message
     )
+
+    $logLength = [math]::Truncate((Get-Item -Path $LogFilePath -ErrorAction SilentlyContinue).Length / 1mb)
+
+    if ($logLength > 16) {
+        
+        $oldLogFile = $($LogFilePath.split('.') -join "-old.")
+        Remove-Item $oldLogFile -ErrorAction SilentlyContinue
+        Rename-Item $LogFilePath -NewName $oldLogFile
+    }
+
     $errorMessage = "Дата: $(Get-Date) `r`nПодробная ошибка: $Message `r`nОшибка: $($ErrorRecord.Exception.Message) `r`nСтек вызова: $($ErrorRecord.ScriptStackTrace) `r`n"
     Add-Content -Path $LogFilePath -Value $errorMessage -Encoding UTF8
 }
