@@ -73,6 +73,17 @@ $timerCloseApp.Interval = $json.close_app_interval
 $timerHeartbeat = New-Object System.Timers.Timer
 $timerHeartbeat.Interval = $json.heartbeat_interval
 
+$actionHeartbeat = {
+    $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ssZ"
+    try {
+        sendMessageToMonitor(@{"serverName"=$CompName; "timestamp"=$currentTime})
+    } catch {
+        $errorMsg = $_.InvocationInfo.InvocationName + " " + $_.exception.message
+        WriteErrorToLogFile -LogFilePath $LOG_FILE_PATH -ErrorRecord $_ -Message $errorMsg
+    }
+}
+
+
 Register-ObjectEvent -InputObject $timerCloseApp -EventName Elapsed -Action {
     $stop_file = [Environment]::GetEnvironmentVariable('STOP_FILE_NAME', [EnvironmentVariableTarget]::Machine)
     if (Test-Path $stop_file) {
@@ -87,15 +98,9 @@ Register-ObjectEvent -InputObject $timerCloseApp -EventName Elapsed -Action {
     }
 }
 
-Register-ObjectEvent -InputObject $timerHeartbeat -EventName Elapsed -Action {
-    $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ssZ"
-    try {
-        sendMessageToMonitor(@{"serverName"=$CompName; "timestamp"=$currentTime})
-    } catch {
-        $errorMsg = $_.InvocationInfo.InvocationName + " " + $_.exception.message
-        WriteErrorToLogFile -LogFilePath $LOG_FILE_PATH -ErrorRecord $_ -Message $errorMsg
-    }
-}
+Register-ObjectEvent -InputObject $timerHeartbeat -EventName Elapsed -Action $actionHeartbeat
+
+& $actionHeartbeat
 
 $timerCloseApp.Start()
 $timerHeartbeat.Start()

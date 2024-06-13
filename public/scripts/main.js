@@ -45,7 +45,8 @@ ws.addEventListener('message', (e) => {
             clearInterval(expiredObject[server._id]);
             updateOfflineTextOnDiv(server.name, 'Missing');
             delete expiredObject[server._id];
-            delete offlineServers.find(serverOffline => server.name === serverOffline.name);
+            let idxDeleteServer = offlineServers.findIndex(serverOffline => serverOffline.name === server.name);
+            offlineServers.splice(idxDeleteServer,1);
         }
     })
 })
