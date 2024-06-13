@@ -167,19 +167,3 @@ async function getLDAPObj(settings) {
 }
 
 export { getLDAPObj };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
