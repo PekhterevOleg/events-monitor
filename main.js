@@ -38,6 +38,7 @@ async function main() {
         const {serverName, timestamp} = req.body;
         const query = {};
         query.cn = serverName;
+        console.log(`Получен hearbeat от ${serverName}: ${timestamp}`);
 
         const update = {
             $set: {
@@ -49,6 +50,7 @@ async function main() {
 
         await moduleDB.updateObjToDB(db, query, update);
         const objFromDb = await moduleDB.getObjFromDB(db, query);
+        console.log(`Отправка объектов всем подключенным клиентов: ${objFromDb}`);
         broadcastData(objFromDb);
         res.sendStatus(200);
     });
