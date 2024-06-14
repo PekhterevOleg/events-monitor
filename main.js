@@ -35,8 +35,9 @@ async function main() {
     }
 
     app.post('/data', async (req, res) => {
-        const {serverName, timestamp} = req.body;
+        let {serverName, timestamp} = req.body;
         const query = {};
+        serverName = serverName.toLocaleUpperCase();
         query.cn = serverName;
         console.log(`Получен hearbeat от ${serverName}: ${timestamp}`);
 

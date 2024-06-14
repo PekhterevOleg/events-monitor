@@ -54,9 +54,14 @@ async function searchObj(client, settings) {
                     if (attrName === 'objectGUID') {
                         value = convertObjectGUID(attr.buffers[0]);
                     }
+                    else if (attrName === 'name') {
+                        value = value.toLocaleUpperCase();
+                    }
+                    else if (attrName === 'cn') {
+                        value = value.toLocaleUpperCase();
+                    }
 
                     obj[attrName] = value;
-                    // obj = {...obj, ...{[attrName]: value}};
                 })
                 obj.timestamp = null;
                 obj.heartbeat = HBStatus.UNDEFINED;
