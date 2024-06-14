@@ -60,9 +60,9 @@ async function main() {
         let { serverName, type, status } = req.body;
         serverName = serverName.toUpperCase();
         const query = {cn: serverName};
-        const { _id } = await moduleDB.getObjFromDB(db, query);
+        const [{ _id }] = await moduleDB.getObjFromDB(db, query);
 
-        broadcastData({serverName, type, status, _id});
+        broadcastData([{serverName, type, status, _id}]);
         res.sendStatus(200);
     })
 

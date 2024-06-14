@@ -30,7 +30,12 @@ function global:WriteErrorToLogFile {
     Add-Content -Path $LogFilePath -Value $errorMessage -Encoding UTF8
 }
 
-function global:sendMessageToMonitor($data, $uri) {
+function global:sendMessageToMonitor {
+    param (
+        [hashtable]$data,
+        [string]$uri
+    )
+
     $body = $data | ConvertTo-Json -ErrorAction Stop
     try {
         Invoke-RestMethod -Uri $uri -Method Post -Body $body -ContentType "application/json"
@@ -81,7 +86,9 @@ $timerTelegramHeartbeat.Interval = 15000
 $actionHeartbeat = {
     $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ssZ"
     try {
-        sendMessageToMonitor(@{"serverName"=$CompName; "timestamp"=$currentTime; "type"="data"}, $json.server_mon_uri)
+        $obj = @{"serverName"=$CompName; "timestamp"=$currentTime; "type"="data"}
+        sendMessageToMonitor -data $obj -uri $json.server_mon_uri
+        # sendMessageToMonitor(@{"serverName"=$CompName; "timestamp"=$currentTime; "type"="data"}, $json.server_mon_uri)
     } catch {
         $errorMsg = $_.InvocationInfo.InvocationName + " " + $_.exception.message
         WriteErrorToLogFile -LogFilePath $LOG_FILE_PATH -ErrorRecord $_ -Message $errorMsg
@@ -91,9 +98,11 @@ $actionHeartbeat = {
 $actionTelegramHeartbeat = {
     $connectTelegram = Test-NetConnection -ComputerName api.telegram.org -Port 443
     if (-not $connectTelegram.TcpTestSucceeded) {
-        sendMessageToMonitor(@{"serverName"=$CompName; type="telegramData"; "status"="Offline"}, $json.telegram_mon_uri)
+        $obj = @{"serverName"=$CompName; type="telegramData"; "status"="Offline"}
+        sendMessageToMonitor -data $obj -uri $json.telegram_mon_uri
     } else {
-        sendMessageToMonitor(@{"serverName"=$CompName; type="telegramData"; "status"="Online"}, $json.telegram_mon_uri)
+        $obj = @{"serverName"=$CompName; type="telegramData"; "status"="Online"}
+        sendMessageToMonitor -data $obj -uri $json.telegram_mon_uri
     }
 }
 
