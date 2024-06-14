@@ -13,7 +13,7 @@ const containerGen = nextContainerGen();
 
 function* nextContainerGen() {
     for (let container of gridSubContainers) {
-        while (container.children.length <= 35) {
+        while (container.children.length <= 42) {
             yield container;
         }
     }
