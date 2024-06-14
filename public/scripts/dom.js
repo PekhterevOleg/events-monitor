@@ -15,8 +15,8 @@ function addElements(server) {
         0: server.name,
         1: heartbeatTimestamp,
         2: hbStatus,
-        3: 'Missing',
-        4: 'N/A'
+        3: 'Missing'
+        // 4: 'N/A'
     }
 
     const gen = containerGen.next();
@@ -28,7 +28,7 @@ function addElements(server) {
         container.append(divCircle);
         elements.push(divCircle);
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 4; i++) {
             let div = document.createElement('div');
             div.textContent = elementsText[i];
             container.append(div);
