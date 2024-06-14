@@ -35,8 +35,8 @@ function addElements(server) {
             elements.push(div);
         }
         const divCircleTelegram = createCircleDiv();
-        divCircle.classList.add('circle-telegram');
-        divCircle.classList.add('circle-inactive');
+        divCircleTelegram.classList.add('circle-telegram');
+        divCircleTelegram.classList.add('circle-inactive');
         container.append(divCircleTelegram);
         elements.push(divCircleTelegram);
     }
