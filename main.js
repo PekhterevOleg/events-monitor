@@ -56,6 +56,16 @@ async function main() {
         res.sendStatus(200);
     });
 
+    app.post("/telegram", async (req, res) => {
+        let { serverName, type, status } = req.body;
+        serverName = serverName.toUpperCase();
+        const query = {cn: serverName};
+        const { _id } = await moduleDB.getObjFromDB(db, query);
+
+        broadcastData({serverName, type, status, _id});
+        res.sendStatus(200);
+    })
+
     app.get('/status', (req, res) => {
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
         console.log(`Client requested /status: ${clientIp}`);
@@ -71,10 +81,10 @@ async function main() {
         ws.send(JSON.stringify(ldapObj));
     });
 
-    function broadcastData(ldapObj) {
+    function broadcastData(data) {
         wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(ldapObj));
+                client.send(JSON.stringify(data));
             }
         });
     }

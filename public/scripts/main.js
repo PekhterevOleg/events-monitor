@@ -1,6 +1,7 @@
 const ws = new WebSocket(`wss://${location.host}`);
 const expiredObject = {};
 const offlineServers = [];
+const offlineTelegram = {};
 
 const HBStatus = {
     UNDEFINED: 'undefined',
@@ -19,14 +20,40 @@ const HBStatus = {
  * @property {string} _id
  */
 
+/**
+ * @typedef {Object} TelergamObj
+ * @property {string} type
+ * @property {string} status
+ * @property {string} _id
+ */
+
 ws.addEventListener('message', (e) => {
     /**
-     * @type {Server[]}
+     * @type {Server[]|TelergamObj[]}
      */
     const serverObjs = JSON.parse(e.data);
     watcherInactiveServer();
 
     serverObjs.forEach(server => {
+        if (server.type === 'telegramData') {
+            const allDivs = searchAllDivs(server.name);
+            /**
+             * @type {HTMLDivElement}
+             */
+            let telegramCircle = allDivs.at(-1);
+            if (server.status === 'Online') {
+                removeClassOnElement(telegramCircle);
+                telegramCircle.classList.add('circle-telegram');
+                telegramCircle.classList.add('circle-active');
+            } else {
+                removeClassOnElement(telegramCircle);
+                telegramCircle.classList.add('circle-telegram');
+                telegramCircle.classList.add('circle-inactive');
+                flickerDivTelegram(telegramCircle, server)
+            }
+            return;
+        }
+
         const allDivs = searchAllDivs(server.name) || addElements(server);
         if (!allDivs) {
             console.log(`Для данного ${server.name} нет доступного контейнера для создания уведомления`);
@@ -37,6 +64,8 @@ ws.addEventListener('message', (e) => {
 
         if (server.heartbeat === HBStatus.INACTIVE && !expiredObject[server._id]) {
             console.log(`Обнаружен устаревший объект: ${server.name}`);
+            clearInterval(offlineTelegram[server.id]);
+            delete offlineTelegram[server._id];
             flickerDivs(allDivs, server);
             const offlineTimerToStr = getOfflineTimer(server.timestamp);
             updateOfflineTextOnDiv(server.name, offlineTimerToStr);

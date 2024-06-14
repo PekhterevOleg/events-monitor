@@ -6,6 +6,8 @@ $path_json = [Environment]::GetEnvironmentVariable("PATH_JSON_CONFIG", [Environm
 $global:json = Get-Content -Path $path_json -Encoding utf8 | ConvertFrom-Json
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
 
+$ProgressPreference = 'silentlycontinue'
+
 function global:WriteErrorToLogFile {
     param(
         [Parameter(Mandatory=$true)]
@@ -28,10 +30,10 @@ function global:WriteErrorToLogFile {
     Add-Content -Path $LogFilePath -Value $errorMessage -Encoding UTF8
 }
 
-function global:sendMessageToMonitor($data) {
+function global:sendMessageToMonitor($data, $uri) {
     $body = $data | ConvertTo-Json -ErrorAction Stop
     try {
-        Invoke-RestMethod -Uri $json.server_mon_uri -Method Post -Body $body -ContentType "application/json"
+        Invoke-RestMethod -Uri $uri -Method Post -Body $body -ContentType "application/json"
     } catch [System.Net.WebException] {
         $errorMsg = $_.InvocationInfo.InvocationName + " " + $_.exception.message
         WriteErrorToLogFile -LogFilePath $LOG_FILE_PATH -ErrorRecord $_ -Message $errorMsg
@@ -73,18 +75,29 @@ $timerCloseApp.Interval = $json.close_app_interval
 $timerHeartbeat = New-Object System.Timers.Timer
 $timerHeartbeat.Interval = $json.heartbeat_interval
 
+$timerTelegramHeartbeat = New-Object System.Timers.Timer
+$timerTelegramHeartbeat.Interval = 15000
+
 $actionHeartbeat = {
     $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ssZ"
     try {
-        sendMessageToMonitor(@{"serverName"=$CompName; "timestamp"=$currentTime})
+        sendMessageToMonitor(@{"serverName"=$CompName; "timestamp"=$currentTime; "type"="data"}, $json.server_mon_uri)
     } catch {
         $errorMsg = $_.InvocationInfo.InvocationName + " " + $_.exception.message
         WriteErrorToLogFile -LogFilePath $LOG_FILE_PATH -ErrorRecord $_ -Message $errorMsg
     }
 }
 
+$actionTelegramHeartbeat = {
+    $connectTelegram = Test-NetConnection -ComputerName api.telegram.org -Port 443
+    if (-not $connectTelegram.TcpTestSucceeded) {
+        sendMessageToMonitor(@{"serverName"=$CompName; type="telegramData"; "status"="Offline"}, $json.telegram_mon_uri)
+    } else {
+        sendMessageToMonitor(@{"serverName"=$CompName; type="telegramData"; "status"="Online"}, $json.telegram_mon_uri)
+    }
+}
 
-Register-ObjectEvent -InputObject $timerCloseApp -EventName Elapsed -Action {
+$actionCloseApp = {
     $stop_file = [Environment]::GetEnvironmentVariable('STOP_FILE_NAME', [EnvironmentVariableTarget]::Machine)
     if (Test-Path $stop_file) {
         try {
@@ -98,9 +111,16 @@ Register-ObjectEvent -InputObject $timerCloseApp -EventName Elapsed -Action {
     }
 }
 
+
+Register-ObjectEvent -InputObject $timerCloseApp -EventName Elapsed -Action $actionCloseApp
+
+Register-ObjectEvent -InputObject $timerTelegramHeartbeat -EventName Elapsed -Action $actionTelegramHeartbeat
+
 Register-ObjectEvent -InputObject $timerHeartbeat -EventName Elapsed -Action $actionHeartbeat
+
 
 & $actionHeartbeat
 
 $timerCloseApp.Start()
 $timerHeartbeat.Start()
+$timerTelegramHeartbeat.Start()

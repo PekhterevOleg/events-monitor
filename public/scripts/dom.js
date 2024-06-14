@@ -15,28 +15,43 @@ function addElements(server) {
         0: server.name,
         1: heartbeatTimestamp,
         2: hbStatus,
-        3: 'Missing'
+        3: 'Missing',
+        4: 'N/A'
     }
 
     const gen = containerGen.next();
 
     if (!gen.done) {
         const container = gen.value;
-        const divCircle = document.createElement('div');
-        const subDivCircle = document.createElement('div');
+        const divCircle = createCircleDiv();
         divCircle.classList.add('circle');
-        divCircle.append(subDivCircle);
         container.append(divCircle);
         elements.push(divCircle);
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 5; i++) {
             let div = document.createElement('div');
             div.textContent = elementsText[i];
             container.append(div);
             elements.push(div);
         }
+        const divCircleTelegram = createCircleDiv();
+        divCircle.classList.add('circle-telegram');
+        divCircle.classList.add('circle-inactive');
+        container.append(divCircleTelegram);
+        elements.push(divCircleTelegram);
     }
     return elements.length? elements: null;
+}
+
+/**
+ * @returns {HTMLDivElement}
+ */
+function createCircleDiv() {
+    const circleEl = document.createElement('div');
+    const subDivCircle = document.createElement('div');
+    circleEl.append(subDivCircle);
+    return circleEl;
+
 }
 
 /**
@@ -55,6 +70,7 @@ function addClassElements(elms, heartbeat, serverName) {
     const circleActive = `circle circle-active`;
     const circleInActive = `circle circle-inactive`;
     const circleError = `circle circle-error`;
+    const circleTelegramError = `circle-telegram circle-error`;
 
     const divActive = `item grid-sub-item color-active`;
     const divInActive = `item grid-sub-item color-inactive`;
@@ -68,6 +84,9 @@ function addClassElements(elms, heartbeat, serverName) {
                 if (isCircle(divEl)) {
                     removeClassOnElement(divEl);
                     applyClassOnElement(divEl, circleInActive);
+                }
+                else if (isCircleTelegram(divEl)) {
+                    return;
                 } else {
                     removeClassOnElement(divEl);
                     applyClassOnElement(divEl, divInActive);
@@ -77,7 +96,11 @@ function addClassElements(elms, heartbeat, serverName) {
                 if (isCircle(divEl)) {
                     removeClassOnElement(divEl);
                     applyClassOnElement(divEl, circleActive);
-                } else {
+                }
+                else if (isCircleTelegram(divEl)) {
+                    return;
+                }
+                else {
                     removeClassOnElement(divEl);
                     applyClassOnElement(divEl, divActive);
                 }
@@ -86,7 +109,12 @@ function addClassElements(elms, heartbeat, serverName) {
                 if (isCircle(divEl)) {
                     removeClassOnElement(divEl);
                     applyClassOnElement(divEl,circleError);
-                } else {
+                }
+                else if (isCircleTelegram(divEl)) {
+                    removeClassOnElement(divEl);
+                    applyClassOnElement(divEl,circleTelegramError);
+                }
+                else {
                     removeClassOnElement(divEl);
                     applyClassOnElement(divEl, divError);
                 }
@@ -104,6 +132,17 @@ function applyClassOnElement(el, strClass) {
     const classes = strClass.split(' ');
     el.classList.add(...classes);
 }
+
+
+/**
+ *
+ * @param {HTMLDivElement} el
+ * @returns {Boolean}
+ */
+function isCircleTelegram(el) {
+    return el.classList.contains('circle-telegram');
+}
+
 
 /**
  *
@@ -233,5 +272,5 @@ function getOfflineTimer(timestamp) {
  */
 function updateOfflineTextOnDiv(serverName, text) {
     const allDivs = searchAllDivs(serverName);
-    Array.from(allDivs).at(-1).textContent = text;
+    Array.from(allDivs).at(-2).textContent = text;
 }
