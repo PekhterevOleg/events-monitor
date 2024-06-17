@@ -83,8 +83,12 @@ ws.addEventListener('message', (e) => {
             clearInterval(expiredObject[server._id]);
             updateOfflineTextOnDiv(server.name, 'Missing');
             delete expiredObject[server._id];
+
             let telegramCircle = allDivs.at(-1);
+            telegramCircle.classList.remove('circle-error');
+            telegramCircle.classList.remove('circle-error-lighter');
             telegramCircle.classList.add('circle-inactive');
+
             let idxDeleteServer = offlineServers.findIndex(serverOffline => serverOffline.name === server.name);
             offlineServers.splice(idxDeleteServer,1);
         }
