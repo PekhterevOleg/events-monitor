@@ -183,7 +183,6 @@ function searchAllDivs(serverName) {
  * @returns {string}
  */
 function shortTimestamp(timestamp) {
-    console.log(`func shortTimestamp value: ${timestamp}`)
     const dateStr = timestamp.toLocaleString();
     return dateStr.replace('T', ' ').slice(0,19);
 }
