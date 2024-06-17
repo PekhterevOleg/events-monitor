@@ -1,14 +1,15 @@
 {
     "log_file": "log_error_event.txt",
     "telegram": {
-        "token": "null",
-        "chat_id": "null"
+        "token": "5528760468:AAEROYmgTd8xnwPEHy19DUb2a9OR_bqU_c0",
+        "chat_id": "-1002196727168"
     },
     "app_stop_file": "stopflag.flag",
     "script_name": "event_watch_forSrv.ps1",
     "logname": "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
     "xmlquery": "*[System[(EventID=21 or EventID=22 or EventID=24 or EventID=25 or EventID=41 or EventID=42)]]",
     "server_mon_uri": "https://svcmon.achimgaz.ru:3000/data",
+    "telegram_mon_uri": "https://svcmon.achimgaz.ru:3000/telegram",	
     "close_app_interval": 2000,
     "heartbeat_interval": 120000
 }
