@@ -42,15 +42,21 @@ ws.addEventListener('message', (e) => {
              */
             let telegramCircle = allDivs.at(-1);
             if (server.status === 'Online') {
+                if (offlineTelegram[server._id]) {
+                    clearInterval(offlineTelegram[server._id]);
+                    delete offlineTelegram[server._id];
+                }
                 removeClassOnElement(telegramCircle);
                 telegramCircle.classList.add('circle-telegram');
                 telegramCircle.classList.add('circle-active');
+
             } else {
                 removeClassOnElement(telegramCircle);
                 telegramCircle.classList.add('circle-telegram');
                 telegramCircle.classList.add('circle-inactive');
-                clearInterval(offlineTelegram[server._id]);
-                flickerDivTelegram(telegramCircle, server)
+                if (!offlineTelegram[server._id]) {
+                    flickerDivTelegram(telegramCircle, server);
+                }
             }
             return;
         }
