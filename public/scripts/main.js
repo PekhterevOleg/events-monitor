@@ -57,7 +57,7 @@ ws.addEventListener('message', (e) => {
                     flickerDivTelegram(telegramCircle, server);
                     removeClassOnElement(telegramCircle);
                     telegramCircle.classList.add('circle-telegram');
-                    telegramCircle.classList.add('circle-inactive');
+                    telegramCircle.classList.add('circle-error');
                 }
             }
             return;

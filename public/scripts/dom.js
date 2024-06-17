@@ -16,7 +16,6 @@ function addElements(server) {
         1: heartbeatTimestamp,
         2: hbStatus,
         3: 'Missing'
-        // 4: 'N/A'
     }
 
     const gen = containerGen.next();
