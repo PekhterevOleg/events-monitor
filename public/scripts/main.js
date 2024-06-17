@@ -71,7 +71,7 @@ ws.addEventListener('message', (e) => {
 
         if (server.heartbeat === HBStatus.INACTIVE && !expiredObject[server._id]) {
             console.log(`Обнаружен устаревший объект: ${server.name}`);
-            clearInterval(offlineTelegram[server.id]);
+            clearInterval(offlineTelegram[server._id]);
             delete offlineTelegram[server._id];
             flickerDivs(allDivs, server);
             const offlineTimerToStr = getOfflineTimer(server.timestamp);
