@@ -42,20 +42,22 @@ ws.addEventListener('message', (e) => {
              */
             let telegramCircle = allDivs.at(-1);
             if (server.status === 'Online') {
+                if (!telegramCircle.classList.contains('circle-active')) {
+                    removeClassOnElement(telegramCircle);
+                    telegramCircle.classList.add('circle-telegram');
+                    telegramCircle.classList.add('circle-active');
+                }
                 if (offlineTelegram[server._id]) {
                     clearInterval(offlineTelegram[server._id]);
                     delete offlineTelegram[server._id];
                 }
-                removeClassOnElement(telegramCircle);
-                telegramCircle.classList.add('circle-telegram');
-                telegramCircle.classList.add('circle-active');
-
-            } else {
-                removeClassOnElement(telegramCircle);
-                telegramCircle.classList.add('circle-telegram');
-                telegramCircle.classList.add('circle-inactive');
+            }
+            else if (server.status === 'Offline') {
                 if (!offlineTelegram[server._id]) {
                     flickerDivTelegram(telegramCircle, server);
+                    removeClassOnElement(telegramCircle);
+                    telegramCircle.classList.add('circle-telegram');
+                    telegramCircle.classList.add('circle-inactive');
                 }
             }
             return;
@@ -78,11 +80,11 @@ ws.addEventListener('message', (e) => {
             updateOfflineTextOnDiv(server.name, offlineTimerToStr);
             offlineServers.push(server);
         } else if (expiredObject[server._id]) {
-            let telegramCircle = allDivs.at(-1);
-            telegramCircle.classList.add('circle-inactive');
             clearInterval(expiredObject[server._id]);
             updateOfflineTextOnDiv(server.name, 'Missing');
             delete expiredObject[server._id];
+            let telegramCircle = allDivs.at(-1);
+            telegramCircle.classList.add('circle-inactive');
             let idxDeleteServer = offlineServers.findIndex(serverOffline => serverOffline.name === server.name);
             offlineServers.splice(idxDeleteServer,1);
         }
