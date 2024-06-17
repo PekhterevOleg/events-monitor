@@ -91,7 +91,7 @@ async function main() {
     }
 
     setInterval(async () => {
-        const expMin = 2 * 60 * 1000;
+        const expMin = 5 * 60 * 1000;
         const expDate = getShiftedDate(expMin);
 
         console.log(`Выполнятеся callback таймера обнаружения устаревших объектов < ${expMin} milliseconds`);
@@ -108,7 +108,7 @@ async function main() {
             broadcastData(await getObjFromDB(db, {name: {$in: srvNames}}));
             await moduleDB.updateObjToDB(db, {name: {$in: srvNames}}, {$set: {send: true}})
         }
-    }, 2 * 60 * 1000)
+    }, 5 * 60 * 1000)
 
 
     server.listen(PORT, '0.0.0.0', () => {
