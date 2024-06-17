@@ -59,10 +59,11 @@ async function main() {
     app.post("/telegram", async (req, res) => {
         let { serverName, type, status } = req.body;
         serverName = serverName.toUpperCase();
+        const name = serverName;
         const query = {cn: serverName};
         const [{ _id }] = await moduleDB.getObjFromDB(db, query);
 
-        broadcastData([{serverName, type, status, _id}]);
+        broadcastData([{name, serverName, type, status, _id}]);
         res.sendStatus(200);
     })
 
