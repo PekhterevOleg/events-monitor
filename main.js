@@ -73,6 +73,10 @@ async function main() {
         res.sendFile(path.join(__dirname, 'public', 'index.html'));
     });
 
+    app.get('/', (req, res) => {
+        res.redirect(301, '/status');
+    });
+
     const options = getSSLOptions(__dirname);
     const server = https.createServer(options, app);
     const wss = new WebSocketServer({server});
