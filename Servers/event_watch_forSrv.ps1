@@ -19,7 +19,7 @@ function global:WriteErrorToLogFile {
 
     $logLength = [math]::Truncate((Get-Item -Path $LogFilePath -ErrorAction SilentlyContinue).Length / 1mb)
 
-    if ($logLength > 16) {
+    if ($logLength -ge 16) {
         
         $oldLogFile = $($LogFilePath.split('.') -join "-old.")
         Remove-Item $oldLogFile -ErrorAction SilentlyContinue
