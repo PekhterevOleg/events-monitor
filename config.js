@@ -19,7 +19,7 @@ ldapConfig.opts             = {};
 ldapConfig.opts.filter      = '(&(objectClass=computer)(operatingSystem=Windows Server 201*)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))';
 ldapConfig.opts.scope       = 'sub';
 ldapConfig.opts.attributes  = ['name', 'objectGUID', 'operatingSystem', 'cn'];
-ldapConfig.opts.exceptions  = ['srv-co-v1c01', 'SRV-CO-SKUD01'];
+ldapConfig.opts.exceptions  = ['srv-co-v1c01', 'SRV-CO-SKUD01', 'SRV-GP-VIUSDU01'];
 
 
 const HBStatus = {};
