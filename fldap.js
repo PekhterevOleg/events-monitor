@@ -160,7 +160,7 @@ async function getLDAPObj(settings) {
         await bindLdap(client, ldapConfig);
         return (await searchObj(client, settings))
             .filter(
-                server => exception.indexOf(server.name.toLocaleUpperCase())
+                server => !!exception.indexOf(server.name.toLocaleUpperCase())
             );
 
     } catch (err) {
