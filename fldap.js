@@ -154,9 +154,14 @@ function createLdapClient(url) {
 async function getLDAPObj(settings) {
     let client;
     try {
+
         client = await createLdapClient(settings.url);
         await bindLdap(client, ldapConfig);
-        return await searchObj(client, settings);
+        return (await searchObj(client, settings))
+            .filter(
+                server => ldapConfig.opts.exceptions.indexOf(server.name.toLocaleUpperCase())
+            );
+
     } catch (err) {
         if (client) {
             client.unbind();
