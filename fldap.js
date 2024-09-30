@@ -1,5 +1,5 @@
-import ldap, { Client } from 'ldapjs';
-import {ldapConfig, HBStatus} from "./config.js";
+import ldap, {Client} from 'ldapjs';
+import {HBStatus, ldapConfig} from "./config.js";
 
 
 /**
@@ -160,7 +160,7 @@ async function getLDAPObj(settings) {
         await bindLdap(client, ldapConfig);
         return (await searchObj(client, settings))
             .filter(
-                server => !!exception.indexOf(server.name.toLocaleUpperCase())
+                server => exception.indexOf(server.name.toLocaleUpperCase()) === -1
             );
 
     } catch (err) {
