@@ -153,13 +153,14 @@ function createLdapClient(url) {
  */
 async function getLDAPObj(settings) {
     let client;
+    const exception = ldapConfig.opts.exceptions.map(item => item.toLocaleUpperCase());
     try {
 
         client = await createLdapClient(settings.url);
         await bindLdap(client, ldapConfig);
         return (await searchObj(client, settings))
             .filter(
-                server => ldapConfig.opts.exceptions.indexOf(server.name.toLocaleUpperCase())
+                server => exception.indexOf(server.name.toLocaleUpperCase())
             );
 
     } catch (err) {
