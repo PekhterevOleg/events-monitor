@@ -45,6 +45,24 @@ body {
     padding: 5px;
 }
 
+
+.grid-sub-container .item:is(
+    :nth-child(n+8):nth-child(-n+11),
+    :nth-child(n+20):nth-child(-n+23),
+    :nth-child(n+32):nth-child(-n+35),
+    :nth-child(n+44):nth-child(-n+47)
+) {
+    background-color: #b7b8c4;
+}
+
+.grid-sub-container .item:is(
+    :nth-child(n+14):nth-child(-n+17),
+    :nth-child(n+26):nth-child(-n+29),
+    :nth-child(n+38):nth-child(-n+41)
+) {
+    background-color: #8c8d9e;
+}
+
 .item {
     display: flex;
     justify-content: center;
