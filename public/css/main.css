@@ -5,7 +5,7 @@
     --color-error: #a80f0f;
     --circle-error-lighter: #f32121;
     --color-error-lighter: #f32121;
-    --color-inactive: #e2e0df;
+    --color-inactive: #ffffff;
     --color-active: black;
 }
 
@@ -46,28 +46,29 @@ body {
 }
 
 
-.grid-sub-container .item:is(
-    :nth-child(n+8):nth-child(-n+11),
-    :nth-child(n+20):nth-child(-n+23),
-    :nth-child(n+32):nth-child(-n+35),
-    :nth-child(n+44):nth-child(-n+47)
-) {
-    background-color: #b7b8c4;
-}
+/*.grid-sub-container .item:is(*/
+/*    :nth-child(n+8):nth-child(-n+11),*/
+/*    :nth-child(n+20):nth-child(-n+23),*/
+/*    :nth-child(n+32):nth-child(-n+35),*/
+/*    :nth-child(n+44):nth-child(-n+47)*/
+/*) {*/
+/*    background-color: #b7b8c4;*/
+/*}*/
 
-.grid-sub-container .item:is(
-    :nth-child(n+14):nth-child(-n+17),
-    :nth-child(n+26):nth-child(-n+29),
-    :nth-child(n+38):nth-child(-n+41)
-) {
-    background-color: #8c8d9e;
-}
+/*.grid-sub-container .item:is(*/
+/*    :nth-child(n+14):nth-child(-n+17),*/
+/*    :nth-child(n+26):nth-child(-n+29),*/
+/*    :nth-child(n+38):nth-child(-n+41)*/
+/*) {*/
+/*    background-color: #e5e5f3;*/
+/*}*/
 
 .item {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #b7b8c4  ;
+
+    background-color: #bebfc8;
     border: 1px solid black;
     border-radius: 10px;
     transition: color ease-in 500ms;
